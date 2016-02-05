@@ -41,7 +41,7 @@ public class Maze : MonoBehaviour {
 
         for (int i = 0; i < mazeGrid.x; i++) {
             for (int j = 0; j < mazeGrid.y; j++) {
-                yield return 0;
+                yield return 1;
                 
                 foreach (var dir in dirs) {
                     IntVector2 move = dir.ToIntVector2();
