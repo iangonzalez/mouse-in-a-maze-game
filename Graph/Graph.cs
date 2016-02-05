@@ -167,7 +167,7 @@ namespace GraphClasses {
         }
 
         public void RemoveEdgesByCondition(Func<GraphEdge, bool> edgeRemoveCondition) {
-            foreach (var e in edgeList) {
+            foreach (var e in EdgeListCopy) {
                 if (edgeRemoveCondition(e)) {
                     RemoveEdge(e);
                 }

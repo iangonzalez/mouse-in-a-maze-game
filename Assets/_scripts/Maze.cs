@@ -30,8 +30,8 @@ public class Maze : MonoBehaviour {
         cells = new MazeCell[mazeGrid.x, mazeGrid.y];
         MazeDirection[] dirs = new MazeDirection[] { MazeDirection.North, MazeDirection.South, MazeDirection.East, MazeDirection.West };
 
-        //mazeGrid.RandomizedKruskals();
-        mazeGrid.RandomConnectedPartition(3, 7);
+        mazeGrid.RandomizedKruskals();
+        //mazeGrid.RandomConnectedPartition(3, 7);
 
         for (int i = 0; i < mazeGrid.x; i++) {
             for (int j = 0; j < mazeGrid.y; j++) {
@@ -41,7 +41,7 @@ public class Maze : MonoBehaviour {
 
         for (int i = 0; i < mazeGrid.x; i++) {
             for (int j = 0; j < mazeGrid.y; j++) {
-                yield return new WaitForSeconds(0.01f);
+                yield return 0;
                 
                 foreach (var dir in dirs) {
                     IntVector2 move = dir.ToIntVector2();
