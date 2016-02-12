@@ -3,3 +3,8 @@ C:\Users\isg2\CPSC490\mouse-in-a-maze-game\Assets\_scripts\Graph.pdb
 C:\Users\isg2\CPSC490\mouse-in-a-maze-game\Graph\obj\Debug\Graph.csprojResolveAssemblyReference.cache
 C:\Users\isg2\CPSC490\mouse-in-a-maze-game\Graph\obj\Debug\Graph.dll
 C:\Users\isg2\CPSC490\mouse-in-a-maze-game\Graph\obj\Debug\Graph.pdb
+C:\Users\Public\Documents\Maze\Assets\_scripts\Graph.dll
+C:\Users\Public\Documents\Maze\Assets\_scripts\Graph.pdb
+C:\Users\Public\Documents\Maze\Graph\obj\Debug\Graph.csprojResolveAssemblyReference.cache
+C:\Users\Public\Documents\Maze\Graph\obj\Debug\Graph.dll
+C:\Users\Public\Documents\Maze\Graph\obj\Debug\Graph.pdb

@@ -39,10 +39,9 @@ public class Maze : MonoBehaviour {
             }
         }
 
+
         for (int i = 0; i < mazeGrid.x; i++) {
             for (int j = 0; j < mazeGrid.y; j++) {
-                yield return 1;
-                
                 foreach (var dir in dirs) {
                     IntVector2 move = dir.ToIntVector2();
                     IntVector2 newCoord = move + new IntVector2(i, j);
@@ -60,6 +59,7 @@ public class Maze : MonoBehaviour {
                 }
             }
         }
+        return (new List<int>()).GetEnumerator();
     }
 
     private void CreatePassage(MazeCell cell, MazeCell otherCell, MazeDirection direction) {
