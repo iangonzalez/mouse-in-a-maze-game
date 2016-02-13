@@ -9,6 +9,11 @@ public class Maze : MonoBehaviour {
     public MazeCell cellPrefab;
     public MazePassage passagePrefab;
     public MazeWall wallPrefab;
+    public MazeDoor doorPrefab;
+
+    public int RoomSeparationDistance;
+    
+
     private MazeCell[,] cells;
 
     public IntVector2 RandomCoordinates {
@@ -59,14 +64,19 @@ public class Maze : MonoBehaviour {
                 }
             }
         }
+
+        //for (int i = 0; i < mazeGrid.edgeList.Count; i++) {
+
+        //}
+
         return (new List<int>()).GetEnumerator();
     }
 
     private void CreatePassage(MazeCell cell, MazeCell otherCell, MazeDirection direction) {
-        MazePassage passage = Instantiate(passagePrefab) as MazePassage;
+        MazeDoor passage = Instantiate(doorPrefab) as MazeDoor;
         passage.Initialize(cell, otherCell, direction);
-        passage = Instantiate(passagePrefab) as MazePassage;
-        passage.Initialize(otherCell, cell, direction.GetOpposite());
+        //passage = Instantiate(passagePrefab) as MazePassage;
+        //passage.Initialize(otherCell, cell, direction.GetOpposite());
     }
 
     private void CreateWall(MazeCell cell, MazeCell otherCell, MazeDirection direction) {
@@ -84,9 +94,9 @@ public class Maze : MonoBehaviour {
         newCell.name = "Cell " + coordinates.x + "," + coordinates.z;
         newCell.transform.parent = transform;
         newCell.transform.localPosition = new Vector3(
-            coordinates.x - (size.x * 0.5f) + 0.5f,
+            RoomSeparationDistance * (coordinates.x - (size.x * 0.5f)) + 0.5f,
             0.0f,
-            coordinates.z - (size.z * 0.5f) + 0.5f
+            RoomSeparationDistance * (coordinates.z - (size.z * 0.5f)) + 0.5f
             );
         newCell.coordinates = coordinates;
         return newCell;
