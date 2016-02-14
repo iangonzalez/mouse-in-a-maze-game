@@ -280,6 +280,8 @@ namespace GraphClasses {
     //class to represent a square grid graph (https://en.wikipedia.org/wiki/Lattice_graph#Square_grid_graph)
     public class GridGraph : Graph {
         int sizeX, sizeY;
+        Dictionary<GraphNode, IntVector2> nodeToCoordinates;
+
         public int x {
             get { return sizeX; }
         }
@@ -293,6 +295,7 @@ namespace GraphClasses {
         public GridGraph(int x, int y) : base() {
             sizeX = x;
             sizeY = y;
+            nodeToCoordinates = new Dictionary<GraphNode, IntVector2>();
             InitGridGraph();
         }
 
@@ -301,6 +304,7 @@ namespace GraphClasses {
                 for (int j = 0; j < sizeY; j++) {
                     grid[i, j] = new GraphNode();
                     AddNode(grid[i, j]);
+                    nodeToCoordinates[grid[i, j]] = new IntVector2(i, j);
                 }
             }
         }
@@ -323,6 +327,10 @@ namespace GraphClasses {
             grid = new GraphNode[sizeX, sizeY];
             InitNodes();
             InitEdges();            
+        }
+
+        public IntVector2 GetNodeCoords(GraphNode n) {
+            return nodeToCoordinates[n];
         }
 
         //print the grid
