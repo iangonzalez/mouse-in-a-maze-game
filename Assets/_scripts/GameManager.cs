@@ -3,11 +3,16 @@
 public class GameManager : MonoBehaviour {
 
     public Maze mazePrefab;
+    public Player playerPrefab;
 
     private Maze mazeInstance;
+    private Player playerInstance;
 
 	// Use this for initialization
 	private void Start () {
+        if (playerPrefab == null) {
+            throw new System.Exception("Player prefab was null\n");
+        }
         BeginGame();
 	}
 	
@@ -21,6 +26,9 @@ public class GameManager : MonoBehaviour {
     private void BeginGame() {
         mazeInstance = Instantiate(mazePrefab) as Maze;
         mazeInstance.Generate();
+
+        playerInstance = Instantiate(playerPrefab) as Player;
+        
     }
     
     private void RestartGame() {

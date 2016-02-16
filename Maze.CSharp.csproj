@@ -86,6 +86,7 @@
     <Compile Include="Assets\_scripts\MazeHallway.cs" />
     <Compile Include="Assets\_scripts\MazePassage.cs" />
     <Compile Include="Assets\_scripts\MazeWall.cs" />
+    <Compile Include="Assets\_scripts\Player.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\_scripts\UnityEngine.xml" />
