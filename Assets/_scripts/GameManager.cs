@@ -7,12 +7,11 @@ public class GameManager : MonoBehaviour {
 
     private Maze mazeInstance;
     private Player playerInstance;
+    private Camera mainCam;
 
 	// Use this for initialization
 	private void Start () {
-        if (playerPrefab == null) {
-            throw new System.Exception("Player prefab was null\n");
-        }
+        mainCam = GetComponentInChildren<Camera>();
         BeginGame();
 	}
 	
@@ -21,19 +20,36 @@ public class GameManager : MonoBehaviour {
 	    if (Input.GetKeyDown(KeyCode.Space)) {
             RestartGame();
         }
+        else if (Input.GetKeyDown(KeyCode.Q)) {
+            SwitchCameraView();
+        }
 	}
+
+    private void SwitchCameraView() {
+        if (mainCam.enabled) {
+            mainCam.enabled = false;
+            playerInstance.EnablePlayerCamera();
+        }
+        else {
+            mainCam.enabled = true;
+            playerInstance.DisablePlayerCamera();
+        }
+    }
 
     private void BeginGame() {
         mazeInstance = Instantiate(mazePrefab) as Maze;
         mazeInstance.Generate();
-
+ 
         playerInstance = Instantiate(playerPrefab) as Player;
-        
+
+        mazeInstance.PlacePlayerInMaze(playerInstance);
+        playerInstance.EnablePlayerCamera();
     }
     
     private void RestartGame() {
         StopAllCoroutines();
         Destroy(mazeInstance.gameObject);
+        Destroy(playerInstance.gameObject);
         BeginGame();
     }
 }
