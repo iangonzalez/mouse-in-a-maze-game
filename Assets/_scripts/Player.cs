@@ -10,6 +10,22 @@ public class Player : MonoBehaviour {
     public float turnSpeed;
     public Vector3 facingVec;
 
+    private IntVector2 mazeCellCoords;
+    private bool inCell;
+
+    //public accessor for the maze cell coordinates of the player (get only)
+    public IntVector2 MazeCellCoords {
+        get {
+            return mazeCellCoords;
+        }
+    }
+
+    public bool InCell {
+        get {
+            return inCell;
+        }
+    }
+
     //initializations:
     void Awake() {
         physicsController = GetComponent<CharacterController>();
@@ -20,15 +36,42 @@ public class Player : MonoBehaviour {
     }
 
     /// <summary>
+    /// On collisions, check for whether the player is touching a cell and update coords and inCell
+    /// accordingly.
+    /// </summary>
+    /// <param name="col"></param>
+    void OnControllerColliderHit(ControllerColliderHit col) {
+        MazeCell collidedCell = col.gameObject.GetComponentInParent<MazeCell>();
+        if (collidedCell != null) {
+            inCell = true;
+            if (collidedCell.coordinates.x != mazeCellCoords.x ||
+                collidedCell.coordinates.z != mazeCellCoords.z) {
+                mazeCellCoords = collidedCell.coordinates;
+            }
+        }
+        else {
+            inCell = false;
+        }
+    }
+
+    /// <summary>
     /// Physics update based on arrow key input
     /// </summary>
     void FixedUpdate() {
-        if (Input.GetKey(KeyCode.RightArrow)) {
-            transform.Rotate(new Vector3(0.0f, turnSpeed, 0.0f));
+        if (Input.GetKey(KeyCode.D)) {
+            transform.Rotate(new Vector3(0.0f, turnSpeed, 0.0f), Space.World);
         }
-        else if (Input.GetKey(KeyCode.LeftArrow)) {
-            transform.Rotate(new Vector3(0.0f, -1 * turnSpeed, 0.0f));
+        else if (Input.GetKey(KeyCode.A)) {
+            transform.Rotate(new Vector3(0.0f, -1 * turnSpeed, 0.0f), Space.World);
         }
+
+        if (Input.GetKey(KeyCode.Q) && Vector3.Angle(playerCamera.transform.forward, Vector3.up) < 170f) {
+            transform.Rotate(playerCamera.transform.right, turnSpeed, Space.World);
+        }
+        else if (Input.GetKey(KeyCode.E) && Vector3.Angle(playerCamera.transform.forward, Vector3.up) > 10f) {
+            transform.Rotate(playerCamera.transform.right, -1 * turnSpeed, Space.World);
+        }
+        
 
         float moveGravity = 0.0f;
         if (!physicsController.isGrounded) {
@@ -37,10 +80,10 @@ public class Player : MonoBehaviour {
 
         Vector3 movement = new Vector3(0f, moveGravity, 0f);
 
-        if (Input.GetKey(KeyCode.UpArrow)) {
+        if (Input.GetKey(KeyCode.W)) {
             movement += speed * ForwardVector;
         }
-        else if (Input.GetKey(KeyCode.DownArrow)) {
+        else if (Input.GetKey(KeyCode.S)) {
             movement -= speed * ForwardVector;
         }
 

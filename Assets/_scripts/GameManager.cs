@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour {
 	    if (Input.GetKeyDown(KeyCode.Space)) {
             RestartGame();
         }
-        else if (Input.GetKeyDown(KeyCode.Q)) {
+        else if (Input.GetKeyDown(KeyCode.Z)) {
             SwitchCameraView();
         }
 	}
