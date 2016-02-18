@@ -44,6 +44,21 @@ namespace GraphClasses {
         }
     }
 
+    public class Path {
+        public List<GraphNode> nodeList;
+        public int pathLength;
+
+        public Path(List<GraphNode> nlist, int pathlen) {
+            nodeList = nlist;
+            pathLength = pathlen;
+        }
+
+        public Path Copy() {
+            List<GraphNode> nodeListCopy = new List<GraphNode>(nodeList);
+            return new Path(nodeListCopy, pathLength);
+        }
+    }
+
     //class to represent a graph. Includes a list of edges, a list of nodes,
     //a dict to check if nodes are in the graph, and a dict to map two nodes to an edge
     public class Graph {
@@ -275,6 +290,32 @@ namespace GraphClasses {
             Func<GraphEdge, bool> edgeRemoveCondition = (e => (partitionAssignment[e.node1] != partitionAssignment[e.node2]));
             RemoveEdgesByCondition(edgeRemoveCondition);
         }
+
+        public Dictionary<GraphNode, Path> GetShortestPathsForTree(GraphNode startNode) {
+            var pathDict = new Dictionary<GraphNode, Path>();
+            var nodeQ = new Queue<GraphNode>();
+            nodeQ.Enqueue(startNode);
+
+            pathDict[startNode] = new Path(new List<GraphNode> { startNode }, 0);
+
+            while (nodeQ.Count > 0) {
+                GraphNode currentNode = nodeQ.Dequeue();
+
+                List<GraphNode> nextNodes = currentNode.neighbors;
+
+                Path currentPath = pathDict[currentNode];
+                foreach (var n in nextNodes) {
+                    if (!pathDict.ContainsKey(n)) {
+                        pathDict[n] = currentPath.Copy();
+                        pathDict[n].pathLength += 1;
+                        pathDict[n].nodeList.Add(n);
+                        nodeQ.Enqueue(n);
+                    }
+                }
+            }
+
+            return pathDict;
+        }
     }
 
     //class to represent a square grid graph (https://en.wikipedia.org/wiki/Lattice_graph#Square_grid_graph)
@@ -364,10 +405,30 @@ namespace GraphClasses {
     }
 
     public static class Test {
-        public static void Main() {
+        public static void ShortestTreePathTest() {
             GridGraph testGraph = new GridGraph(5, 10);
+            testGraph.RandomizedKruskals();
+
             testGraph.PrintGrid();
-            testGraph.GetEdge(testGraph.grid[0,0], testGraph.grid[0,1]);
+
+            Console.WriteLine("Running DFS to find shortest paths.");
+            var pathDict = testGraph.GetShortestPathsForTree(testGraph.grid[0, 0]);
+
+            var pathToAdjacentNode = pathDict[testGraph.grid[0, 1]];
+            Console.WriteLine(pathToAdjacentNode.pathLength);
+
+            var lastNode = pathToAdjacentNode.nodeList[0];
+            foreach (var n in pathToAdjacentNode.nodeList.Skip(1)) {
+                if (testGraph.GetEdge(lastNode, n) == null) {
+                    throw new Exception("an edge didnt exist in the path.");
+                }
+                lastNode = n;
+            }
+            Console.WriteLine("path checks out.");
+        }
+
+        public static void Main() {
+            ShortestTreePathTest();
         }
     }
 }

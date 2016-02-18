@@ -2,11 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using GraphClasses;
+using System.Linq;
 
 public class Maze : MonoBehaviour {
 
     //size of maze in x by z
     public IntVector2 size;
+
+    //location of exit
+    public IntVector2 exitCoords;
 
     //prefabs to build physical maze
     public MazeCell cellPrefab;
@@ -154,16 +158,50 @@ public class Maze : MonoBehaviour {
     }
 
     /// <summary>
-    /// Attach the given player's transform to the maze and put him in a cell.
+    /// Attach the given player's transform to the maze and put him in a random leaf cell.
     /// </summary>
-    public void PlacePlayerInMaze(Player player) {
+    public IntVector2 PlacePlayerInMaze(Player player) {
         player.transform.parent = transform;
-
-        IntVector2 coords = RandomCoordinates;
+        
+        var leafNodes = MazeGrid.nodeList.Where(n => n.neighbors.Count == 1);
+        var randStartNode = leafNodes.ElementAt(Random.Range(0, leafNodes.Count()));
+        IntVector2 coords = MazeGrid.GetNodeCoords(randStartNode);
 
         Vector3 playerPos = GetCellLocalPosition(coords.x, coords.z);
         playerPos.y += 0.2f;
 
         player.MovePlayerToPosition(playerPos);
+
+        return coords;        
+    }
+
+    /// <summary>
+    /// Determine the location of the exit cell (farthest possible from player) and transform that cell into
+    /// the exit by calling TurnCellIntoExit
+    /// </summary>
+    /// <param name="playerPosition"></param>
+    /// <returns>The coordinates of the exit cell</returns>
+    public IntVector2 PlaceExitCell(IntVector2 playerPosition) {
+        var pathDict = MazeGrid.GetShortestPathsForTree(MazeGrid.grid[playerPosition.x, playerPosition.z]);
+
+        int longestLenSoFar = 0;
+        IntVector2 exitCoords = playerPosition;
+        foreach (var n in pathDict.Keys) {
+            if (pathDict[n].pathLength > longestLenSoFar) {
+                longestLenSoFar = pathDict[n].pathLength;
+                exitCoords = MazeGrid.GetNodeCoords(n);
+            }
+        }
+
+        this.exitCoords = exitCoords;
+
+        //TurnCellIntoExit(playerPosition);
+        TurnCellIntoExit(exitCoords);
+
+        return exitCoords;
+    }
+
+    private void TurnCellIntoExit(IntVector2 exitCoords) {
+        //cells[exitCoords.x, exitCoords.z].transform.localPosition += new Vector3(0, 3.0f, 0);
     }
 }

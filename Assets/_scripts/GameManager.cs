@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour {
     private Player playerInstance;
     private Camera mainCam;
 
+    private IntVector2 exitCellCoords;
+
 	// Use this for initialization
 	private void Start () {
         mainCam = GetComponentInChildren<Camera>();
@@ -22,6 +24,14 @@ public class GameManager : MonoBehaviour {
         }
         else if (Input.GetKeyDown(KeyCode.Z)) {
             SwitchCameraView();
+        }
+
+        //check if player has reached the end
+        if (playerInstance.InCell &&
+            playerInstance.MazeCellCoords.x == exitCellCoords.x &&
+            playerInstance.MazeCellCoords.z == exitCellCoords.z) {
+
+            EndGame();
         }
 	}
 
@@ -42,7 +52,9 @@ public class GameManager : MonoBehaviour {
  
         playerInstance = Instantiate(playerPrefab) as Player;
 
-        mazeInstance.PlacePlayerInMaze(playerInstance);
+        IntVector2 playerStartCoords = mazeInstance.PlacePlayerInMaze(playerInstance);
+        exitCellCoords = mazeInstance.PlaceExitCell(playerStartCoords);
+
         playerInstance.EnablePlayerCamera();
     }
     
@@ -51,5 +63,13 @@ public class GameManager : MonoBehaviour {
         Destroy(mazeInstance.gameObject);
         Destroy(playerInstance.gameObject);
         BeginGame();
+    }
+
+    private void EndGame() {
+        Debug.Log("Game over!");
+        StopAllCoroutines();
+        Destroy(mazeInstance.gameObject);
+        Destroy(playerInstance.gameObject);
+        Destroy(this);
     }
 }
