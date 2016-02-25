@@ -1,15 +1,23 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
 
     public Maze mazePrefab;
     public Player playerPrefab;
+    public GameAI gameAiPrefab;
+    public TextCommunicationChannel commChannel;
 
     private Maze mazeInstance;
     private Player playerInstance;
+    private GameAI gameAiInstance;
+    private TextCommunicationChannel commChannelInstance;
     private Camera mainCam;
 
     private IntVector2 exitCellCoords;
+
+    public Text aiText;
+    public InputField playerWordBox;
 
 	// Use this for initialization
 	private void Start () {
@@ -54,6 +62,11 @@ public class GameManager : MonoBehaviour {
 
         IntVector2 playerStartCoords = mazeInstance.PlacePlayerInMaze(playerInstance);
         exitCellCoords = mazeInstance.PlaceExitCell(playerStartCoords);
+
+        gameAiInstance = Instantiate(gameAiPrefab) as GameAI;
+        gameAiInstance.player = playerInstance;
+        
+               
 
         playerInstance.EnablePlayerCamera();
     }

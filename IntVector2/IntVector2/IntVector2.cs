@@ -12,4 +12,12 @@ public struct IntVector2 {
         a.z += b.z;
         return a;
     }
+
+    public static bool operator ==(IntVector2 a, IntVector2 b) {
+        return (a.x == b.x && a.z == b.z);
+    }
+
+    public static bool operator !=(IntVector2 a, IntVector2 b) {
+        return !(a.x == b.x && a.z == b.z);
+    }
 }

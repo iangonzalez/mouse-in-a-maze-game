@@ -1,6 +1,11 @@
 ﻿using System;
 using UnityEngine;
 
+public enum PlayerState {
+    Active,
+    InTextCommunication
+}
+
 public class Player : MonoBehaviour {
 
     private CharacterController physicsController;
@@ -12,6 +17,8 @@ public class Player : MonoBehaviour {
 
     private IntVector2 mazeCellCoords;
     private bool inCell;
+
+    private PlayerState currentState;
 
     //public accessor for the maze cell coordinates of the player (get only)
     public IntVector2 MazeCellCoords {
@@ -33,6 +40,9 @@ public class Player : MonoBehaviour {
 
         //camera shouldnt be active until the player is placed.
         DisablePlayerCamera();
+
+        //set initial player state
+        currentState = PlayerState.Active;
     }
 
     /// <summary>
@@ -44,8 +54,7 @@ public class Player : MonoBehaviour {
         MazeCell collidedCell = col.gameObject.GetComponentInParent<MazeCell>();
         if (collidedCell != null) {
             inCell = true;
-            if (collidedCell.coordinates.x != mazeCellCoords.x ||
-                collidedCell.coordinates.z != mazeCellCoords.z) {
+            if (collidedCell.coordinates != mazeCellCoords) {
                 mazeCellCoords = collidedCell.coordinates;
             }
         }
@@ -58,6 +67,11 @@ public class Player : MonoBehaviour {
     /// Physics update based on arrow key input
     /// </summary>
     void FixedUpdate() {
+        if (currentState == PlayerState.InTextCommunication) {
+            return;
+        }
+
+
         if (Input.GetKey(KeyCode.D)) {
             transform.Rotate(new Vector3(0.0f, turnSpeed, 0.0f), Space.World);
         }
@@ -117,5 +131,13 @@ public class Player : MonoBehaviour {
             playerCamera = GetComponentInChildren<Camera>();
         }
         playerCamera.enabled = false;
+    }
+
+    public void BeginTextCommunicationWithPlayer() {
+        currentState = PlayerState.InTextCommunication;
+    }
+
+    public void EndTextCommunicationWithPlayer() {
+        currentState = PlayerState.Active;
     }
 }
