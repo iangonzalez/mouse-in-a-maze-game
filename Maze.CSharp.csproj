@@ -77,21 +77,54 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\_scripts\GameAI.cs" />
-    <Compile Include="Assets\_scripts\GameManager.cs" />
-    <Compile Include="Assets\_scripts\Maze.cs" />
-    <Compile Include="Assets\_scripts\MazeCell.cs" />
-    <Compile Include="Assets\_scripts\MazeCellEdge.cs" />
-    <Compile Include="Assets\_scripts\MazeDirection.cs" />
-    <Compile Include="Assets\_scripts\MazeDoor.cs" />
-    <Compile Include="Assets\_scripts\MazeHallway.cs" />
-    <Compile Include="Assets\_scripts\MazePassage.cs" />
-    <Compile Include="Assets\_scripts\MazeWall.cs" />
-    <Compile Include="Assets\_scripts\Player.cs" />
-    <Compile Include="Assets\_scripts\TextCommunicationChannel.cs" />
+    <Content Include="Assets\Resources\_scripts\Graph.dll" />
+    <Content Include="Assets\Resources\_scripts\Graph.dll.mdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Resources\_scripts\Graph.pdb" />
+    <Content Include="Assets\Resources\_scripts\Graph.vshost.exe" />
+    <Content Include="Assets\Resources\_scripts\IntVector2.dll" />
+    <Content Include="Assets\Resources\_scripts\IntVector2.dll.mdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Resources\_scripts\IntVector2.pdb" />
+    <Content Include="Assets\Resources\_scripts\UnityEngine.xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\_scripts\UnityEngine.xml" />
+    <Compile Include="Assets\Resources\_scripts\CommunicationChannel.cs" />
+    <Compile Include="Assets\Resources\_scripts\CommunicationChannelFactory.cs" />
+    <Compile Include="Assets\Resources\_scripts\GameAI.cs" />
+    <Compile Include="Assets\Resources\_scripts\GameManager.cs" />
+    <Compile Include="Assets\Resources\_scripts\Maze.cs" />
+    <Compile Include="Assets\Resources\_scripts\MazeCell.cs" />
+    <Compile Include="Assets\Resources\_scripts\MazeCellEdge.cs" />
+    <Compile Include="Assets\Resources\_scripts\MazeDirection.cs" />
+    <Compile Include="Assets\Resources\_scripts\MazeDoor.cs" />
+    <Compile Include="Assets\Resources\_scripts\MazeHallway.cs" />
+    <Compile Include="Assets\Resources\_scripts\MazePassage.cs" />
+    <Compile Include="Assets\Resources\_scripts\MazeWall.cs" />
+    <Compile Include="Assets\Resources\_scripts\OneWayTextCommunication.cs" />
+    <Compile Include="Assets\Resources\_scripts\Player.cs" />
+    <Compile Include="Assets\Resources\_scripts\PlayerResponse.cs" />
+    <Compile Include="Assets\Resources\_scripts\TextCommunicationChannel.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Resources\prefabs\AIText.prefab" />
+    <None Include="Assets\Resources\prefabs\GameAI.prefab" />
+    <None Include="Assets\Resources\prefabs\Maze.prefab" />
+    <None Include="Assets\Resources\prefabs\MazeCell.prefab" />
+    <None Include="Assets\Resources\prefabs\MazeDoor.prefab" />
+    <None Include="Assets\Resources\prefabs\MazeHallway.prefab" />
+    <None Include="Assets\Resources\prefabs\MazePassage.prefab" />
+    <None Include="Assets\Resources\prefabs\MazeRoom.prefab" />
+    <None Include="Assets\Resources\prefabs\MazeWall.prefab" />
+    <None Include="Assets\Resources\prefabs\OneWayCommChannel.prefab" />
+    <None Include="Assets\Resources\prefabs\Player.prefab" />
+    <None Include="Assets\Resources\prefabs\PlayerInput.prefab" />
+    <None Include="Assets\Resources\prefabs\TextCommChannel.prefab" />
+    <None Include="Assets\Resources\prefabs\Wall.prefab" />
+    <None Include="Assets\Resources\_scripts\Graph.vshost.exe.manifest" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>

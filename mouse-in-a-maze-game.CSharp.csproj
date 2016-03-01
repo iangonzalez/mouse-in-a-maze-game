@@ -60,29 +60,33 @@
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
     </Reference>
-    <Reference Include="Graph">
-      <HintPath>Assets\_scripts\Graph.dll</HintPath>
-    </Reference>
     <Reference Include="IntVector2">
-      <HintPath>Assets\_scripts\IntVector2.dll</HintPath>
+      <HintPath>Assets\Resources\_scripts\IntVector2.dll</HintPath>
+    </Reference>
+    <Reference Include="Graph">
+      <HintPath>Assets\Resources\_scripts\Graph.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\_scripts\GameAI.cs" />
-    <Compile Include="Assets\_scripts\GameManager.cs" />
-    <Compile Include="Assets\_scripts\Maze.cs" />
-    <Compile Include="Assets\_scripts\MazeCell.cs" />
-    <Compile Include="Assets\_scripts\MazeCellEdge.cs" />
-    <Compile Include="Assets\_scripts\MazeDirection.cs" />
-    <Compile Include="Assets\_scripts\MazeDoor.cs" />
-    <Compile Include="Assets\_scripts\MazeHallway.cs" />
-    <Compile Include="Assets\_scripts\MazePassage.cs" />
-    <Compile Include="Assets\_scripts\MazeWall.cs" />
-    <Compile Include="Assets\_scripts\Player.cs" />
-    <Compile Include="Assets\_scripts\TextCommunicationChannel.cs" />
+    <Compile Include="Assets\Resources\_scripts\CommunicationChannel.cs" />
+    <Compile Include="Assets\Resources\_scripts\CommunicationChannelFactory.cs" />
+    <Compile Include="Assets\Resources\_scripts\GameAI.cs" />
+    <Compile Include="Assets\Resources\_scripts\GameManager.cs" />
+    <Compile Include="Assets\Resources\_scripts\Maze.cs" />
+    <Compile Include="Assets\Resources\_scripts\MazeCell.cs" />
+    <Compile Include="Assets\Resources\_scripts\MazeCellEdge.cs" />
+    <Compile Include="Assets\Resources\_scripts\MazeDirection.cs" />
+    <Compile Include="Assets\Resources\_scripts\MazeDoor.cs" />
+    <Compile Include="Assets\Resources\_scripts\MazeHallway.cs" />
+    <Compile Include="Assets\Resources\_scripts\MazePassage.cs" />
+    <Compile Include="Assets\Resources\_scripts\MazeWall.cs" />
+    <Compile Include="Assets\Resources\_scripts\OneWayTextCommunication.cs" />
+    <Compile Include="Assets\Resources\_scripts\Player.cs" />
+    <Compile Include="Assets\Resources\_scripts\PlayerResponse.cs" />
+    <Compile Include="Assets\Resources\_scripts\TextCommunicationChannel.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\_scripts\UnityEngine.xml" />
+    <None Include="Assets\Resources\_scripts\UnityEngine.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>
