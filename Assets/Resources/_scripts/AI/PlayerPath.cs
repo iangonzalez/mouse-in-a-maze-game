@@ -37,21 +37,4 @@ public class PlayerPath {
         }
         return retValue;
     }
-
-    //public static bool operator==(PlayerPath path1, PlayerPath path2) {
-    //    bool retValue = true;
-    //    if (!path1.pointList.SequenceEqual(path2.pointList)) {
-    //        return false;
-    //    }
-    //    else {
-    //        foreach (var pt in path1.pointList) {
-    //            retValue = retValue && (path1.pointOrder[pt] == path2.pointOrder[pt]);
-    //        }
-    //    }
-    //    return retValue;
-    //}
-
-    //public static bool operator !=(PlayerPath path1, PlayerPath path2) {
-    //    return !(path1 == path2);
-    //}
 }

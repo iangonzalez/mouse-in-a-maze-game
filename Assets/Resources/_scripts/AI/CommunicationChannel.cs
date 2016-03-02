@@ -43,16 +43,18 @@ public abstract class CommunicationChannel : MonoBehaviour {
     /// Creates the ai text box containing its message, as well as the player's input box depending on parameter.
     /// </summary>
     /// <param name="withPlayerWordBox"></param>
-    protected void CreateTextBoxes(bool withPlayerWordBox = true) {
+    protected void CreateTextBoxes(bool withPlayerWordBox = true, bool withContinuePrompt = true) {
         aiTextBox = Instantiate(aiTextBoxPrefab) as Text;
         aiTextBox.transform.SetParent(gameCanvas.transform, false);
 
-        continueTextBox = Instantiate(aiTextBoxPrefab) as Text;
-        continueTextBox.transform.SetParent(gameCanvas.transform, false);
+        if (withContinuePrompt) {
+            continueTextBox = Instantiate(aiTextBoxPrefab) as Text;
+            continueTextBox.transform.SetParent(gameCanvas.transform, false);
 
-        continueTextBox.text = continueMessage;
-        continueTextBox.fontSize = 12;
-        continueTextBox.rectTransform.anchoredPosition += new Vector2(0f, -450.0f);
+            continueTextBox.text = continueMessage;
+            continueTextBox.fontSize = 12;
+            continueTextBox.rectTransform.anchoredPosition += new Vector2(0f, -450.0f);
+        }
 
 
         if (withPlayerWordBox) {

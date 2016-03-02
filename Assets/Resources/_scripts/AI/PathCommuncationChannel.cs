@@ -47,7 +47,7 @@ public abstract class PathCommuncationChannel : CommunicationChannel {
 
         playerCoords = player.MazeCellCoords;
 
-        CreateTextBoxes(withPlayerWordBox : false);
+        CreateTextBoxes(withPlayerWordBox : false, withContinuePrompt : false);
 
         if (aiTextBox == null) {
             Debug.LogError("Could not find one of the text boxes for game AI to use.");

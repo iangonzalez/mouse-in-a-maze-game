@@ -8,7 +8,7 @@ public class TextCommunicationChannel : CommunicationChannel {
 
     //complete communcation on enter
     protected override void Update() {
-        if (Input.GetKeyDown(KeyCode.Return)) {
+        if (Input.GetKeyDown(KeyCode.Return) && ai != null && player != null) {
             commComplete = true;
         }
     }

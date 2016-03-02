@@ -59,9 +59,7 @@ public class GameAI : MonoBehaviour {
     private void Update() {
         //if in communcation, check for response, call handler on response if there
         if (aiCommState == AICommunicationState.InCommunication) {
-            Debug.Log("ai is in comm");
             if (currentCommChannel.IsResponseReceived()) {
-                Debug.Log("got here");
                 playerResponse = currentCommChannel.GetResponse();
 
                 //end communcation and reset state
@@ -74,15 +72,28 @@ public class GameAI : MonoBehaviour {
         }
         else if (playerCurrentCoords != player.MazeCellCoords) {
             playerCurrentCoords = player.MazeCellCoords;
-            Vector3 localRoomPos = maze.GetCellLocalPosition(playerCurrentCoords.x, playerCurrentCoords.z);
-            PlayerPath pathToFollow = new PlayerPath(new List<Vector3> { localRoomPos }, initWithListOrder: false);
-
-            roomExitCommChannel.SetPathForPlayer(pathToFollow);
-            SendMessageToPlayer(RandomAiLine, roomExitCommChannel);
+            if (UnityEngine.Random.Range(0f, 1.0f) > 0.5) {
+                MakeTextRequestToPlayer();
+            }
+            else {
+                MakePathRequestToPlayer();
+            }
         }
 
         //Debug.Log(aiCommState.ToString());
     }
+
+    private void MakePathRequestToPlayer() {
+        Vector3 localRoomPos = maze.GetCellLocalPosition(playerCurrentCoords.x, playerCurrentCoords.z);
+        PlayerPath pathToFollow = new PlayerPath(new List<Vector3> { localRoomPos }, initWithListOrder: false);
+        roomExitCommChannel.SetPathForPlayer(pathToFollow);
+        SendMessageToPlayer(RandomAiLine, roomExitCommChannel);
+    }
+
+    private void MakeTextRequestToPlayer() {
+        SendMessageToPlayer(RandomAiLine, textCommChannel);
+    }
+    
 
     /// <summary>
     /// sends the given string message to the player via the given channel. 
@@ -109,7 +120,6 @@ public class GameAI : MonoBehaviour {
             TextResponseHandler();
         }
         else if (response.playerPath != null) {
-            Debug.Log("path wasnt null");
             PathResponseHandler();
         }
     }
