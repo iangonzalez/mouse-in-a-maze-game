@@ -1,7 +1,9 @@
 ﻿using System;
 using UnityEngine;
 
-
+/// <summary>
+/// Text communication channel (one way). Same as parent class, but no input box and empty response.
+/// </summary>
 public class OneWayTextCommunication : TextCommunicationChannel {
     public override void StartCommunicationWithPlayer(Player player, GameAI ai, string message) {
         this.player = player;
@@ -17,6 +19,10 @@ public class OneWayTextCommunication : TextCommunicationChannel {
         }
 
         aiTextBox.text = message;
+    }
+
+    public override PlayerResponse GetResponse() {
+        return new PlayerResponse(string.Empty);
     }
 }
 

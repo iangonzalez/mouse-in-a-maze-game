@@ -1,6 +1,10 @@
 ﻿using System;
 using UnityEngine;
 
+/// <summary>
+/// Factory class for making all different types of communcation channels.
+/// Based on unity's resource.load function + prefab instantiation
+/// </summary>
 public static class CommunicationChannelFactory {
     private static TextCommunicationChannel twoWayCommChannelPrefab;
     private static OneWayTextCommunication oneWayCommChannelPrefab;
@@ -15,8 +19,9 @@ public static class CommunicationChannelFactory {
             Debug.Log("prefab instantiation in factory is null");
             return null;
         }
-        else
+        else {
             return commObj.GetComponent<TextCommunicationChannel>();
+        }
     }
 
     public static CommunicationChannel MakeOneWayTextChannel() {
@@ -25,8 +30,9 @@ public static class CommunicationChannelFactory {
             Debug.Log("prefab instantiation in factory is null");
             return null;
         }
-        else
+        else {
             return commObj.GetComponent<OneWayTextCommunication>();
+        }
     }
 }
 

@@ -8,10 +8,9 @@ public enum AICommunicationState {
 
 public class GameAI : MonoBehaviour {
     public Player player;
-    public TextCommunicationChannel playerCommChannelPrefab;
-    public OneWayTextCommunication oneWayCommChannelPrefab;
 
-    private TextCommunicationChannel playerCommChannel;
+    private CommunicationChannel currentCommChannel;
+    private TextCommunicationChannel textCommChannel;
     private OneWayTextCommunication oneWayCommChannel;
     private string receivedPlayerMessage;
     private IntVector2 playerCurrentCoords;
@@ -20,11 +19,25 @@ public class GameAI : MonoBehaviour {
 
     private PlayerResponse playerResponse;
 
-    void Start() {
-        playerCommChannel = CommunicationChannelFactory.Make2WayTextChannel() as TextCommunicationChannel;
+    private string[] aiLines = {
+        "Welcome to The Maze.",
+        "Are you prepared to die in here?",
+        "Do you fear me?",
+    };
+
+    private string RandomAiLine {
+        get {
+            return aiLines[UnityEngine.Random.Range(0, aiLines.Length)];
+        }
+    }
+
+    private void Start() {
+
+        //init communcation channels 
+        textCommChannel = CommunicationChannelFactory.Make2WayTextChannel() as TextCommunicationChannel;
         oneWayCommChannel = CommunicationChannelFactory.MakeOneWayTextChannel() as OneWayTextCommunication;
 
-        if (playerCommChannel == null) {
+        if (textCommChannel == null) {
             Debug.Log("2 way was null");
         }
         if (oneWayCommChannel == null) {
@@ -32,41 +45,71 @@ public class GameAI : MonoBehaviour {
         }
 
         playerCurrentCoords = player.MazeCellCoords;
+
+        //start out not in communcation
         aiCommState = AICommunicationState.NotInCommuncation;
     }
 
-    void Update() {
-        if (aiCommState == AICommunicationState.InCommunication && playerCommChannel.IsResponseReceived()) {
-            playerResponse = playerCommChannel.GetResponse();
-            playerCommChannel.EndCommuncation();
-            aiCommState = AICommunicationState.NotInCommuncation;
-            TextResponseHandler();
-        }
+    private void Update() {
+        //if in communcation, check for response, call handler on response if there
+        if (aiCommState == AICommunicationState.InCommunication) {
+            if (currentCommChannel.IsResponseReceived()) {
+                playerResponse = currentCommChannel.GetResponse();
 
+                //end communcation and reset state
+                currentCommChannel.EndCommuncation();
+                aiCommState = AICommunicationState.NotInCommuncation;
+
+                //handle whatever the response was
+                HandleResponse(playerResponse);
+            }
+        }
         else if (playerCurrentCoords != player.MazeCellCoords) {
             playerCurrentCoords = player.MazeCellCoords;
-            SendMessageToPlayer("Welcome to the maze.", playerCommChannel);
+            SendMessageToPlayer(RandomAiLine, textCommChannel);
         }
+
+        //Debug.Log(aiCommState.ToString());
     }
 
+    /// <summary>
+    /// sends the given string message to the player via the given channel. 
+    /// Also sets current channel to be given channel.
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="channel"></param>
     private void SendMessageToPlayer(string message, CommunicationChannel channel) {
         if (channel == null) {
             throw new Exception("channel was null");
         }
         aiCommState = AICommunicationState.InCommunication;
+        currentCommChannel = channel;
         channel.StartCommunicationWithPlayer(player, this, message);        
     }
 
-    private void HandleResponse() {
-
+    /// <summary>
+    /// Handle a response from a communcation channel (to be expanded)
+    /// </summary>
+    /// <param name="response"></param>
+    private void HandleResponse(PlayerResponse response) {
+        //do nothing if there was no text response
+        if (response.responseStr == string.Empty) {
+            return;
+        }
+        else {
+            TextResponseHandler();
+        }
     }
 
+    /// <summary>
+    /// Text response handler (to be expanded)
+    /// </summary>
     private void TextResponseHandler() {
         if (playerResponse.responseStr == "yes") {
             SendMessageToPlayer("Good choice.", oneWayCommChannel);
         }
         else {
-            SendMessageToPlayer("Bad idea, bucko.", oneWayCommChannel);
+            SendMessageToPlayer(playerResponse.responseStr, oneWayCommChannel);
         }
     }
 }
