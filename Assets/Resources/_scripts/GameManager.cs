@@ -65,6 +65,7 @@ public class GameManager : MonoBehaviour {
 
         gameAiInstance = Instantiate(gameAiPrefab) as GameAI;
         gameAiInstance.player = playerInstance;
+        gameAiInstance.maze = mazeInstance;
         
         playerInstance.EnablePlayerCamera();
     }

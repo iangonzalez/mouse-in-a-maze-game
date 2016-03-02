@@ -91,22 +91,26 @@
     <Content Include="Assets\Resources\_scripts\UnityEngine.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Resources\_scripts\CommunicationChannel.cs" />
-    <Compile Include="Assets\Resources\_scripts\CommunicationChannelFactory.cs" />
-    <Compile Include="Assets\Resources\_scripts\GameAI.cs" />
+    <Compile Include="Assets\Resources\_scripts\AI\CommunicationChannel.cs" />
+    <Compile Include="Assets\Resources\_scripts\AI\CommunicationChannelFactory.cs" />
+    <Compile Include="Assets\Resources\_scripts\AI\GameAI.cs" />
+    <Compile Include="Assets\Resources\_scripts\AI\PathCommuncationChannel.cs" />
+    <Compile Include="Assets\Resources\_scripts\AI\PlayerPath.cs" />
+    <Compile Include="Assets\Resources\_scripts\AI\RoomExitPathCommChannel.cs" />
+    <Compile Include="Assets\Resources\_scripts\AI\TimedPathCommChannel.cs" />
     <Compile Include="Assets\Resources\_scripts\GameManager.cs" />
-    <Compile Include="Assets\Resources\_scripts\Maze.cs" />
-    <Compile Include="Assets\Resources\_scripts\MazeCell.cs" />
-    <Compile Include="Assets\Resources\_scripts\MazeCellEdge.cs" />
-    <Compile Include="Assets\Resources\_scripts\MazeDirection.cs" />
-    <Compile Include="Assets\Resources\_scripts\MazeDoor.cs" />
-    <Compile Include="Assets\Resources\_scripts\MazeHallway.cs" />
-    <Compile Include="Assets\Resources\_scripts\MazePassage.cs" />
-    <Compile Include="Assets\Resources\_scripts\MazeWall.cs" />
-    <Compile Include="Assets\Resources\_scripts\OneWayTextCommunication.cs" />
-    <Compile Include="Assets\Resources\_scripts\Player.cs" />
-    <Compile Include="Assets\Resources\_scripts\PlayerResponse.cs" />
-    <Compile Include="Assets\Resources\_scripts\TextCommunicationChannel.cs" />
+    <Compile Include="Assets\Resources\_scripts\Maze\Maze.cs" />
+    <Compile Include="Assets\Resources\_scripts\Maze\MazeCell.cs" />
+    <Compile Include="Assets\Resources\_scripts\Maze\MazeCellEdge.cs" />
+    <Compile Include="Assets\Resources\_scripts\Maze\MazeDirection.cs" />
+    <Compile Include="Assets\Resources\_scripts\Maze\MazeDoor.cs" />
+    <Compile Include="Assets\Resources\_scripts\Maze\MazeHallway.cs" />
+    <Compile Include="Assets\Resources\_scripts\Maze\MazePassage.cs" />
+    <Compile Include="Assets\Resources\_scripts\Maze\MazeWall.cs" />
+    <Compile Include="Assets\Resources\_scripts\AI\OneWayTextCommunication.cs" />
+    <Compile Include="Assets\Resources\_scripts\Player\Player.cs" />
+    <Compile Include="Assets\Resources\_scripts\AI\PlayerResponse.cs" />
+    <Compile Include="Assets\Resources\_scripts\AI\TextCommunicationChannel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Resources\prefabs\AIText.prefab" />
