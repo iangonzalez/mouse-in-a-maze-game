@@ -6,7 +6,10 @@ using UnityEngine;
 
 public class RoomExitPathCommChannel : PathCommuncationChannel {
 
+
     public override bool IsResponseReceived() {
-        return !player.InCell;    
+        return !player.InCell && safeToCheckResponse;    
     }
+
+
 }

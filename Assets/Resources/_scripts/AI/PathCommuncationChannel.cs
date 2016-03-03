@@ -8,6 +8,9 @@ public abstract class PathCommuncationChannel : CommunicationChannel {
     PlayerPath playerPath = null;
     IntVector2 playerCoords;
 
+    float waitTimeBeforeResponseCheck = 1.0f;
+    protected bool safeToCheckResponse = false;
+
     public void SetPathForPlayer(PlayerPath path) {
         playerPath = path;
     }
@@ -32,10 +35,22 @@ public abstract class PathCommuncationChannel : CommunicationChannel {
     }
 
     protected override void Update() {
+        if (!safeToCheckResponse) {
+            waitTimeBeforeResponseCheck -= Time.deltaTime;
+
+            if (waitTimeBeforeResponseCheck <= 0) {
+                Debug.Log("safe to check response");
+                safeToCheckResponse = true;
+            }
+        }
+        
+
         TraverseAnyClosePoint();
     }
 
     public override void StartCommunicationWithPlayer(Player player, GameAI ai, string message) {
+        waitTimeBeforeResponseCheck = 1.0f;
+        safeToCheckResponse = false;
 
         enabled = true;
 
@@ -57,7 +72,7 @@ public abstract class PathCommuncationChannel : CommunicationChannel {
             throw new InvalidOperationException("Cannot start path comm channel with null player path. Call SetPathForPlayer() before StartCommuncationWithPlayer()");
         }
 
-        aiTextBox.text = message;
+        aiTextBox.text = message;        
     }
 
     public override PlayerResponse GetResponse() {

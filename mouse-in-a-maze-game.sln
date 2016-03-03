@@ -1,7 +1,7 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2015
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mouse-in-a-maze-game.CSharp", "mouse-in-a-maze-game.CSharp.csproj", "{CD54E2A4-75E0-3546-E84A-2CAFB9FAFCAA}"
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2008
+
+Project("{03055F70-1908-2092-A500-FF9C6A27A758}") = "mouse-in-a-maze-game", "Assembly-CSharp.csproj", "{DE0FAC3B-B14A-833D-AA9F-5AF8C6608736}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,12 +9,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{CD54E2A4-75E0-3546-E84A-2CAFB9FAFCAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CD54E2A4-75E0-3546-E84A-2CAFB9FAFCAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CD54E2A4-75E0-3546-E84A-2CAFB9FAFCAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CD54E2A4-75E0-3546-E84A-2CAFB9FAFCAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE0FAC3B-B14A-833D-AA9F-5AF8C6608736}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE0FAC3B-B14A-833D-AA9F-5AF8C6608736}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE0FAC3B-B14A-833D-AA9F-5AF8C6608736}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE0FAC3B-B14A-833D-AA9F-5AF8C6608736}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Assembly-CSharp.csproj
 	EndGlobalSection
 EndGlobal

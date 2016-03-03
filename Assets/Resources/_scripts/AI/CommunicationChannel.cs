@@ -48,12 +48,10 @@ public abstract class CommunicationChannel : MonoBehaviour {
         aiTextBox.transform.SetParent(gameCanvas.transform, false);
 
         if (withContinuePrompt) {
-            continueTextBox = Instantiate(aiTextBoxPrefab) as Text;
+            continueTextBox = (Instantiate(Resources.Load("prefabs/ContinueText")) as GameObject).GetComponent<Text>();
             continueTextBox.transform.SetParent(gameCanvas.transform, false);
 
             continueTextBox.text = continueMessage;
-            continueTextBox.fontSize = 12;
-            continueTextBox.rectTransform.anchoredPosition += new Vector2(0f, -450.0f);
         }
 
 
