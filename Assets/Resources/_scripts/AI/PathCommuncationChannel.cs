@@ -25,7 +25,7 @@ public abstract class PathCommuncationChannel : CommunicationChannel {
 
     protected void TraverseAnyClosePoint() {
         foreach (var pt in playerPath.pointList) {
-            if (playerPath.pointOrder[pt] == -1 && IsPlayerNearPoint(pt, 1.0f)) {
+            if (playerPath.pointOrder[pt] == -1 && IsPlayerNearPoint(pt, 0.3f)) {
                 playerPath.TraversePointInPath(pt);
             }
         }

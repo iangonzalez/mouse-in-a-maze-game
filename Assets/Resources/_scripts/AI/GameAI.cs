@@ -76,18 +76,34 @@ public class GameAI : MonoBehaviour {
                 MakeTextRequestToPlayer();
             }
             else {
-                MakePathRequestToPlayer();
+                AskPlayerToTouchCorners();
             }
         }
 
         //Debug.Log(aiCommState.ToString());
     }
 
-    private void MakePathRequestToPlayer() {
+    private void AskPlayerToTouchCorners() {
         Vector3 localRoomPos = maze.GetCellLocalPosition(playerCurrentCoords.x, playerCurrentCoords.z);
-        PlayerPath pathToFollow = new PlayerPath(new List<Vector3> { localRoomPos }, initWithListOrder: false);
+
+        var pointList = new List<Vector3> {
+            localRoomPos + new Vector3(0.5f, 0, 0.5f),
+            localRoomPos + new Vector3(-0.5f, 0, 0.5f),
+            localRoomPos + new Vector3(0.5f, 0, -0.5f),
+            localRoomPos + new Vector3(-0.5f, 0, -0.5f),
+        };
+
+
+        //testing by marking a specific corner with a sphere
+        //GameObject testSphere = GameObject.Find("TestSphere");
+        //testSphere.transform.parent = maze.transform;
+        //testSphere.transform.localPosition = localRoomPos;
+        //testSphere.GetComponent<SphereCollider>().enabled = false;
+
+
+        PlayerPath pathToFollow = new PlayerPath(pointList, initWithListOrder: false);
         roomExitCommChannel.SetPathForPlayer(pathToFollow);
-        SendMessageToPlayer(RandomAiLine, roomExitCommChannel);
+        SendMessageToPlayer("Touch all four corners of this room before moving on.", roomExitCommChannel);
     }
 
     private void MakeTextRequestToPlayer() {
@@ -137,7 +153,7 @@ public class GameAI : MonoBehaviour {
     }
 
     private void PathResponseHandler() {
-        if (playerResponse.playerPath.ArePointsInCorrectOrder()) {
+        if (playerResponse.playerPath.WereAllPointsTraversed()) {
             SendMessageToPlayer("Thank you for obeying.", oneWayCommChannel);
         }
         else {

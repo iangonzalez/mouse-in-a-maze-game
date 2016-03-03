@@ -37,4 +37,12 @@ public class PlayerPath {
         }
         return retValue;
     }
+
+    public bool WereAllPointsTraversed() {
+        var retValue = true;
+        for (var i = 0; i < pointList.Count; i++) {
+            retValue = retValue && (pointOrder[pointList[i]] != -1);
+        }
+        return retValue;
+    }
 }
