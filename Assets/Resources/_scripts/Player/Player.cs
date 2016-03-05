@@ -104,6 +104,22 @@ public class Player : MonoBehaviour {
         physicsController.Move(movement);
     }
 
+
+    void Update() {
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            DropBreadCrumb();
+        }
+    }
+
+    private void DropBreadCrumb() {
+        GameObject breadcrumb = Instantiate(Resources.Load("prefabs/Breadcrumb") as GameObject);
+        if (breadcrumb == null) {
+            Debug.LogError("breadcrumb was null");
+        }
+        breadcrumb.transform.parent = transform.parent;
+        breadcrumb.transform.localPosition = transform.localPosition + (ForwardVector * 0.5f);
+    }
+
     /// <summary>
     /// The direction that the player's camera is facing.
     /// </summary>

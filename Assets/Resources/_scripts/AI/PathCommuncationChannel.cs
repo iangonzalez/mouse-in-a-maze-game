@@ -39,7 +39,6 @@ public abstract class PathCommuncationChannel : CommunicationChannel {
             waitTimeBeforeResponseCheck -= Time.deltaTime;
 
             if (waitTimeBeforeResponseCheck <= 0) {
-                Debug.Log("safe to check response");
                 safeToCheckResponse = true;
             }
         }

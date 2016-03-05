@@ -27,10 +27,7 @@ public class GameManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	private void Update () {
-	    if (Input.GetKeyDown(KeyCode.Space)) {
-            RestartGame();
-        }
-        else if (Input.GetKeyDown(KeyCode.Z)) {
+	    if (Input.GetKeyDown(KeyCode.Z)) {
             SwitchCameraView();
         }
 
