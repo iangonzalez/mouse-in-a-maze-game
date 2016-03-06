@@ -64,6 +64,14 @@ public class Player : MonoBehaviour {
     }
 
     /// <summary>
+    /// Init maze cell coordinates. Should ONLY be called once, when the player is placed into the maze.
+    /// </summary>
+    /// <param name="coords"></param>
+    public void InitializePlayerCoords(IntVector2 coords) {
+        mazeCellCoords = coords;
+    }
+
+    /// <summary>
     /// Physics update based on arrow key input
     /// </summary>
     void FixedUpdate() {

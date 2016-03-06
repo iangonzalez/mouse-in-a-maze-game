@@ -167,6 +167,8 @@ public class Maze : MonoBehaviour {
         var randStartNode = leafNodes.ElementAt(Random.Range(0, leafNodes.Count()));
         IntVector2 coords = MazeGrid.GetNodeCoords(randStartNode);
 
+        player.InitializePlayerCoords(coords);
+
         Vector3 playerPos = GetCellLocalPosition(coords.x, coords.z);
         playerPos.y += 0.2f;
 
@@ -203,5 +205,25 @@ public class Maze : MonoBehaviour {
 
     private void TurnCellIntoExit(IntVector2 exitCoords) {
         //cells[exitCoords.x, exitCoords.z].transform.localPosition += new Vector3(0, 3.0f, 0);
+    }
+
+    public void CloseDoorsInCell(IntVector2 cellCoords) {
+        MazeCell cellToClose = cells[cellCoords.x, cellCoords.z];
+        MazeDoor[] doorsToClose = cellToClose.GetComponentsInChildren<MazeDoor>();
+
+        Debug.Log(doorsToClose.Count());
+
+        foreach (var door in doorsToClose) {
+            door.CloseDoor();
+        }
+    }
+
+    public void OpenDoorsInCell(IntVector2 cellCoords) {
+        MazeCell cellToClose = cells[cellCoords.x, cellCoords.z];
+        MazeDoor[] doorsToClose = cellToClose.GetComponentsInChildren<MazeDoor>();
+
+        foreach (var door in doorsToClose) {
+            door.OpenDoor();
+        }
     }
 }

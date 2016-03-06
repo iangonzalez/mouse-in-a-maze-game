@@ -73,6 +73,8 @@ public class GameAI : MonoBehaviour {
         else if (playerCurrentCoords != player.MazeCellCoords) {
             playerCurrentCoords = player.MazeCellCoords;
             if (UnityEngine.Random.Range(0f, 1.0f) > 0.5) {
+                //Debug.Log(player.MazeCellCoords.x + " " + player.MazeCellCoords.z);
+                maze.CloseDoorsInCell(playerCurrentCoords);
                 MakeTextRequestToPlayer();
             }
             else {
@@ -138,6 +140,7 @@ public class GameAI : MonoBehaviour {
         else if (response.playerPath != null) {
             PathResponseHandler();
         }
+        maze.OpenDoorsInCell(playerCurrentCoords);
     }
 
     /// <summary>
