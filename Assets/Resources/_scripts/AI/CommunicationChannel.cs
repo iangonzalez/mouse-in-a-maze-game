@@ -25,6 +25,11 @@ public abstract class CommunicationChannel : MonoBehaviour {
     //text to prompt player to hit enter
     protected const string continueMessage = "  [Hit ENTER to continue]";
 
+    //lines of the message
+    protected string[] messageLines;
+    protected int lineIdx;
+    
+
     //methods that have to be implemented by children (provide interface for interaction, see GameAI.cs)
     protected abstract void Update();
     abstract public void StartCommunicationWithPlayer(Player player, GameAI ai, string message);
@@ -77,6 +82,27 @@ public abstract class CommunicationChannel : MonoBehaviour {
         if (aiTextBox != null) {
             DestroyObject(aiTextBox.gameObject);
         }
+    }
+
+    protected string[] SplitMessageIntoLines(string message) {
+        messageLines = message.Split(new char[] { '\n' }); 
+        return messageLines;
+    }
+
+    protected void DisplayNextLine() {
+        if (lineIdx < messageLines.Length) {
+            string nextLine = messageLines[lineIdx];
+            aiTextBox.text = nextLine;
+            lineIdx++;
+        }
+    }
+
+    protected void InitializeChannelFields(Player player, GameAI ai) {
+        lineIdx = 0;
+        enabled = true;
+        this.player = player;
+        this.ai = ai;
+        commComplete = false;
     }
 }
 

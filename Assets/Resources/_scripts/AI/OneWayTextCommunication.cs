@@ -6,10 +6,7 @@ using UnityEngine;
 /// </summary>
 public class OneWayTextCommunication : TextCommunicationChannel {
     public override void StartCommunicationWithPlayer(Player player, GameAI ai, string message) {
-        enabled = true;
-
-        this.player = player;
-        this.ai = ai;
+        InitializeChannelFields(player, ai);
 
         //restrict players movements
         player.BeginTextCommunicationWithPlayer();
@@ -20,7 +17,8 @@ public class OneWayTextCommunication : TextCommunicationChannel {
             Debug.LogError("Could not find one of the text boxes for game AI to use.");
         }
 
-        aiTextBox.text = message;
+        SplitMessageIntoLines(message);
+        DisplayNextLine();
     }
 
     public override PlayerResponse GetResponse() {

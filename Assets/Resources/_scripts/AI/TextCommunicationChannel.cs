@@ -9,7 +9,12 @@ public class TextCommunicationChannel : CommunicationChannel {
     //complete communcation on enter
     protected override void Update() {
         if (Input.GetKeyDown(KeyCode.Return) && ai != null && player != null) {
-            commComplete = true;
+            if (lineIdx >= messageLines.Length) {
+                commComplete = true;
+            }
+            else {
+                DisplayNextLine();
+            }
         }
     }
 
@@ -20,9 +25,7 @@ public class TextCommunicationChannel : CommunicationChannel {
     /// <param name="ai"></param>
     /// <param name="message"></param>
     public override void StartCommunicationWithPlayer(Player player, GameAI ai, string message) {
-        enabled = true;
-        this.player = player;
-        this.ai = ai;
+        InitializeChannelFields(player, ai);
 
         //restrict players movements
         player.BeginTextCommunicationWithPlayer();
@@ -33,9 +36,8 @@ public class TextCommunicationChannel : CommunicationChannel {
             Debug.LogError("Could not find one of the text boxes for game AI to use.");
         }
 
-        aiTextBox.text = message;
-
-        commComplete = false;
+        SplitMessageIntoLines(message);
+        DisplayNextLine();
     }
 
     public override bool IsResponseReceived() {

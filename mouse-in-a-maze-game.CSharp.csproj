@@ -88,8 +88,10 @@
     <Compile Include="Assets\Resources\_scripts\Maze\MazePassage.cs" />
     <Compile Include="Assets\Resources\_scripts\Maze\MazeWall.cs" />
     <Compile Include="Assets\Resources\_scripts\Player\Player.cs" />
+    <Compile Include="Assets\Resources\_scripts\Utils\GameLinesTextGetter.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\GameLines\opening_monologue\opening.txt" />
     <None Include="Assets\Resources\_scripts\UnityEngine.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />

@@ -24,6 +24,8 @@ public class GameAI : MonoBehaviour {
 
     private PlayerResponse playerResponse;
 
+    private bool openingDone = false;
+
     private string[] aiLines = {
         "Welcome to The Maze.",
         "Are you prepared to die in here?",
@@ -70,6 +72,10 @@ public class GameAI : MonoBehaviour {
                 HandleResponse(playerResponse);
             }
         }
+        else if (!openingDone) {
+            SendMessageToPlayer(GameLinesTextGetter.OpeningMonologue(), oneWayCommChannel);
+            openingDone = true;
+        }
         else if (playerCurrentCoords != player.MazeCellCoords) {
             playerCurrentCoords = player.MazeCellCoords;
             if (UnityEngine.Random.Range(0f, 1.0f) > 0.5) {
@@ -109,7 +115,7 @@ public class GameAI : MonoBehaviour {
     }
 
     private void MakeTextRequestToPlayer() {
-        SendMessageToPlayer(RandomAiLine, textCommChannel);
+        SendMessageToPlayer("multiple \n lines", textCommChannel);
     }
     
 

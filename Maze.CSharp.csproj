@@ -111,6 +111,7 @@
     <Compile Include="Assets\Resources\_scripts\Player\Player.cs" />
     <Compile Include="Assets\Resources\_scripts\AI\PlayerResponse.cs" />
     <Compile Include="Assets\Resources\_scripts\AI\TextCommunicationChannel.cs" />
+    <Compile Include="Assets\Resources\_scripts\Utils\GameLinesTextGetter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Resources\prefabs\AIText.prefab" />

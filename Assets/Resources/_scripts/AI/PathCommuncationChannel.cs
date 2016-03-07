@@ -51,10 +51,7 @@ public abstract class PathCommuncationChannel : CommunicationChannel {
         waitTimeBeforeResponseCheck = 1.0f;
         safeToCheckResponse = false;
 
-        enabled = true;
-
-        this.player = player;
-        this.ai = ai;
+        InitializeChannelFields(player, ai);
 
         //Do NOT restrict players movements
         //player.BeginTextCommunicationWithPlayer();
