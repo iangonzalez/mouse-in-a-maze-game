@@ -58,6 +58,7 @@ public class GameAI : MonoBehaviour {
             }
         }
         else if (!openingDone) {
+            maze.CloseDoorsInCell(playerCurrentCoords);
             SendMessageToPlayer(GameLinesTextGetter.OpeningMonologue(), oneWayCommChannel);
             openingDone = true;
         }
@@ -105,6 +106,7 @@ public class GameAI : MonoBehaviour {
     }
 
     public void MakeTextRequestToPlayer() {
+        maze.CloseDoorsInCell(playerCurrentCoords);
         currentInterchange = new TextOnlyInterchange();
         SendMessageToPlayer(currentInterchange.GetQuestionText(), textCommChannel);
     }
@@ -130,6 +132,8 @@ public class GameAI : MonoBehaviour {
     /// </summary>
     /// <param name="response"></param>
     private void HandleResponse(PlayerResponse response) {
+        maze.OpenDoorsInCell(playerCurrentCoords);
+
         //do nothing if there was no text response expected
         if (currentCommChannel.GetType() == typeof(OneWayTextCommunication)) {
             return;
@@ -137,7 +141,5 @@ public class GameAI : MonoBehaviour {
 
         bool wasResponseCorrect = currentInterchange.CheckIfCorrectResponse(response);
         SendMessageToPlayer(currentInterchange.GetResponseToPlayerText(wasResponseCorrect), oneWayCommChannel);
-
-        maze.OpenDoorsInCell(playerCurrentCoords);
     }
 }

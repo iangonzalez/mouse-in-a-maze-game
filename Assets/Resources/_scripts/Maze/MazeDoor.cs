@@ -14,7 +14,6 @@ public class MazeDoor : MazeCellEdge {
 
     void FixedUpdate() {
         if (!open && door.transform.localPosition.y < 0.25f) {
-            //Debug.Log("doing this thing"); 
             door.transform.localPosition += new Vector3(0, 0.01f, 0);
         }
         else if (open && door.transform.localPosition.y > -0.35) {
@@ -23,7 +22,6 @@ public class MazeDoor : MazeCellEdge {
     }
 
     public void CloseDoor() {
-        Debug.Log("calling close door in exactly this object");
         if (open) {
             open = false;
         }

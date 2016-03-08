@@ -40,7 +40,8 @@ public static class GameLinesTextGetter {
     }
 
     public static string RandomTextRequest() {
-        return "Do you like me, test subject 34992?\tyes";
+        var lines = GetAllLinesByPath("requests/text_requests/requests.txt");
+        return lines[UnityEngine.Random.Range(0, lines.Length)];
     }
 
 }

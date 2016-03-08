@@ -211,8 +211,6 @@ public class Maze : MonoBehaviour {
         MazeCell cellToClose = cells[cellCoords.x, cellCoords.z];
         MazeDoor[] doorsToClose = cellToClose.GetComponentsInChildren<MazeDoor>();
 
-        Debug.Log(doorsToClose.Count());
-
         foreach (var door in doorsToClose) {
             door.CloseDoor();
         }

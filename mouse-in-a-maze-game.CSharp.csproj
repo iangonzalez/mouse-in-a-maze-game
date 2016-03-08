@@ -96,6 +96,7 @@
     <None Include="Assets\GameLines\beginning\opening_monologue.txt" />
     <None Include="Assets\GameLines\requests\first_request.txt" />
     <None Include="Assets\GameLines\requests\request_intros.txt" />
+    <None Include="Assets\GameLines\requests\text_requests\requests.txt" />
     <None Include="Assets\GameLines\responses\negative\first_response.txt" />
     <None Include="Assets\GameLines\responses\negative\responses.txt" />
     <None Include="Assets\GameLines\responses\negative\very_negative\responses.txt" />
