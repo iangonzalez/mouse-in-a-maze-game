@@ -80,8 +80,8 @@ public class GameAI : MonoBehaviour {
             playerCurrentCoords = player.MazeCellCoords;
             if (UnityEngine.Random.Range(0f, 1.0f) > 0.5) {
                 //Debug.Log(player.MazeCellCoords.x + " " + player.MazeCellCoords.z);
-                maze.CloseDoorsInCell(playerCurrentCoords);
-                MakeTextRequestToPlayer();
+                //maze.CloseDoorsInCell(playerCurrentCoords);
+                //MakeTextRequestToPlayer();
             }
             else {
                 AskPlayerToTouchCorners();
@@ -111,7 +111,7 @@ public class GameAI : MonoBehaviour {
 
         PlayerPath pathToFollow = new PlayerPath(pointList, initWithListOrder: false);
         roomExitCommChannel.SetPathForPlayer(pathToFollow);
-        SendMessageToPlayer("Touch all four corners of this room before moving on.", roomExitCommChannel);
+        SendMessageToPlayer(GameLinesTextGetter.FirstRequest(), roomExitCommChannel);
     }
 
     private void MakeTextRequestToPlayer() {
@@ -163,10 +163,10 @@ public class GameAI : MonoBehaviour {
 
     private void PathResponseHandler() {
         if (playerResponse.playerPath.WereAllPointsTraversed()) {
-            SendMessageToPlayer("Thank you for obeying.", oneWayCommChannel);
+            SendMessageToPlayer(GameLinesTextGetter.FirstResponse(isPositive: true), oneWayCommChannel);
         }
         else {
-            SendMessageToPlayer("Disobedience will not be tolerated.", oneWayCommChannel);
+            SendMessageToPlayer(GameLinesTextGetter.FirstResponse(isPositive: false), oneWayCommChannel);
         }
     }
 }

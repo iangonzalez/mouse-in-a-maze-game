@@ -91,7 +91,15 @@
     <Compile Include="Assets\Resources\_scripts\Utils\GameLinesTextGetter.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\GameLines\opening_monologue\opening.txt" />
+    <None Include="Assets\GameLines\beginning\first_request.txt" />
+    <None Include="Assets\GameLines\beginning\opening_monologue.txt" />
+    <None Include="Assets\GameLines\requests\first_request.txt" />
+    <None Include="Assets\GameLines\requests\request_intros.txt" />
+    <None Include="Assets\GameLines\responses\negative\first_response.txt" />
+    <None Include="Assets\GameLines\responses\negative\responses.txt" />
+    <None Include="Assets\GameLines\responses\negative\very_negative\responses.txt" />
+    <None Include="Assets\GameLines\responses\positive\first_response.txt" />
+    <None Include="Assets\GameLines\responses\positive\responses.txt" />
     <None Include="Assets\Resources\_scripts\UnityEngine.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />

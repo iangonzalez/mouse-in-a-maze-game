@@ -9,12 +9,30 @@ using UnityEngine;
 public static class GameLinesTextGetter {
     private static string linesDirectory = Application.dataPath + "/GameLines/";
 
-    private static string GetLinesByPath(string subPath) {
+    private static string GetAllTextByPath(string subPath) {
         return File.ReadAllText(linesDirectory + subPath);
     }
 
-    public static string OpeningMonologue() {
-        return GetLinesByPath("opening_monologue/opening.txt");
+    private static string[] GetAllLinesByPath(string subPath) {
+        return File.ReadAllLines(linesDirectory + subPath);
     }
+
+    public static string OpeningMonologue() {
+        return GetAllTextByPath("beginning/opening_monologue.txt");
+    }
+
+    public static string FirstRequest() {
+        return GetAllTextByPath("requests/first_request.txt");
+    }
+
+    public static string FirstResponse(bool isPositive = true) {
+        return GetAllTextByPath( "responses/" +  (isPositive ? "positive" : "negative") + "/first_response.txt");
+    }
+
+    public static string RandomPositiveResponse() {
+        var lines = GetAllLinesByPath("responses/positive/responses.txt");
+        return lines[UnityEngine.Random.Range(0, lines.Length)];
+    }
+    
 }
 
