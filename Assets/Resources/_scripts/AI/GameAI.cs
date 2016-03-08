@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -25,18 +26,9 @@ public class GameAI : MonoBehaviour {
     private PlayerResponse playerResponse;
 
     private bool openingDone = false;
+    private bool firstInterchangeDone = false;
 
-    private string[] aiLines = {
-        "Welcome to The Maze.",
-        "Are you prepared to die in here?",
-        "Do you fear me?",
-    };
-
-    private string RandomAiLine {
-        get {
-            return aiLines[UnityEngine.Random.Range(0, aiLines.Length)];
-        }
-    }
+    private AiPlayerInterchange currentInterchange;
 
     private void Start() {
 
@@ -44,13 +36,6 @@ public class GameAI : MonoBehaviour {
         textCommChannel = CommunicationChannelFactory.Make2WayTextChannel() as TextCommunicationChannel;
         oneWayCommChannel = CommunicationChannelFactory.MakeOneWayTextChannel() as OneWayTextCommunication;
         roomExitCommChannel = CommunicationChannelFactory.MakeRoomExitPathChannel() as RoomExitPathCommChannel;
-
-        if (textCommChannel == null) {
-            Debug.Log("2 way was null");
-        }
-        if (oneWayCommChannel == null) {
-            Debug.Log("1 way was null");
-        }
 
         playerCurrentCoords = player.MazeCellCoords;
 
@@ -78,20 +63,22 @@ public class GameAI : MonoBehaviour {
         }
         else if (playerCurrentCoords != player.MazeCellCoords) {
             playerCurrentCoords = player.MazeCellCoords;
-            if (UnityEngine.Random.Range(0f, 1.0f) > 0.5) {
-                //Debug.Log(player.MazeCellCoords.x + " " + player.MazeCellCoords.z);
-                //maze.CloseDoorsInCell(playerCurrentCoords);
-                //MakeTextRequestToPlayer();
+            if (!firstInterchangeDone) {
+                AskPlayerToTouchCorners(true);
+                firstInterchangeDone = true;
+            }
+            else if (UnityEngine.Random.Range(0f, 1.0f) > 0.5) {
+                AskPlayerToTouchCorners();                
             }
             else {
-                AskPlayerToTouchCorners();
+                MakeTextRequestToPlayer();
             }
         }
 
         //Debug.Log(aiCommState.ToString());
     }
 
-    private void AskPlayerToTouchCorners() {
+    private PlayerPath GetPlayerCornerPath() {
         Vector3 localRoomPos = maze.GetCellLocalPosition(playerCurrentCoords.x, playerCurrentCoords.z);
 
         var pointList = new List<Vector3> {
@@ -100,22 +87,26 @@ public class GameAI : MonoBehaviour {
             localRoomPos + new Vector3(0.5f, 0, -0.5f),
             localRoomPos + new Vector3(-0.5f, 0, -0.5f),
         };
-
-
-        //testing by marking a specific corner with a sphere
-        //GameObject testSphere = GameObject.Find("TestSphere");
-        //testSphere.transform.parent = maze.transform;
-        //testSphere.transform.localPosition = localRoomPos;
-        //testSphere.GetComponent<SphereCollider>().enabled = false;
-
-
-        PlayerPath pathToFollow = new PlayerPath(pointList, initWithListOrder: false);
-        roomExitCommChannel.SetPathForPlayer(pathToFollow);
-        SendMessageToPlayer(GameLinesTextGetter.FirstRequest(), roomExitCommChannel);
+        
+        return new PlayerPath(pointList, initWithListOrder: false);
     }
 
-    private void MakeTextRequestToPlayer() {
-        SendMessageToPlayer("multiple \n lines", textCommChannel);
+    public void AskPlayerToTouchCorners(bool firstRequest = false) {
+        var pathToFollow = GetPlayerCornerPath();
+        var cornerInterchange = new TouchCornersInterchange(new PlayerResponse(pathToFollow, false), firstRequest);
+        RequestPlayerToFollowPath(cornerInterchange, roomExitCommChannel);
+    }
+
+    private void RequestPlayerToFollowPath(PathInterchange pathInterchange, PathCommuncationChannel channel) {
+        currentInterchange = pathInterchange;
+        channel.SetPathForPlayer(pathInterchange.expectedResponse.playerPath);
+        SendMessageToPlayer(pathInterchange.GetQuestionText(), channel);
+        
+    }
+
+    public void MakeTextRequestToPlayer() {
+        currentInterchange = new TextOnlyInterchange();
+        SendMessageToPlayer(currentInterchange.GetQuestionText(), textCommChannel);
     }
     
 
@@ -139,34 +130,14 @@ public class GameAI : MonoBehaviour {
     /// </summary>
     /// <param name="response"></param>
     private void HandleResponse(PlayerResponse response) {
-        //do nothing if there was no text response
-        if (response.responseStr != string.Empty) {
-            TextResponseHandler();
+        //do nothing if there was no text response expected
+        if (currentCommChannel.GetType() == typeof(OneWayTextCommunication)) {
+            return;
         }
-        else if (response.playerPath != null) {
-            PathResponseHandler();
-        }
+
+        bool wasResponseCorrect = currentInterchange.CheckIfCorrectResponse(response);
+        SendMessageToPlayer(currentInterchange.GetResponseToPlayerText(wasResponseCorrect), oneWayCommChannel);
+
         maze.OpenDoorsInCell(playerCurrentCoords);
-    }
-
-    /// <summary>
-    /// Text response handler (to be expanded)
-    /// </summary>
-    private void TextResponseHandler() {
-        if (playerResponse.responseStr == "yes") {
-            SendMessageToPlayer("Good choice.", oneWayCommChannel);
-        }
-        else {
-            SendMessageToPlayer(playerResponse.responseStr, oneWayCommChannel);
-        }
-    }
-
-    private void PathResponseHandler() {
-        if (playerResponse.playerPath.WereAllPointsTraversed()) {
-            SendMessageToPlayer(GameLinesTextGetter.FirstResponse(isPositive: true), oneWayCommChannel);
-        }
-        else {
-            SendMessageToPlayer(GameLinesTextGetter.FirstResponse(isPositive: false), oneWayCommChannel);
-        }
     }
 }

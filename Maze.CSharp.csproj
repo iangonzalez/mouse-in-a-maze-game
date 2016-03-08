@@ -91,6 +91,7 @@
     <Content Include="Assets\Resources\_scripts\UnityEngine.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Resources\_scripts\AI\AiPlayerInterchange.cs" />
     <Compile Include="Assets\Resources\_scripts\AI\CommunicationChannel.cs" />
     <Compile Include="Assets\Resources\_scripts\AI\CommunicationChannelFactory.cs" />
     <Compile Include="Assets\Resources\_scripts\AI\GameAI.cs" />

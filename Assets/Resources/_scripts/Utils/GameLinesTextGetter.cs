@@ -29,10 +29,19 @@ public static class GameLinesTextGetter {
         return GetAllTextByPath( "responses/" +  (isPositive ? "positive" : "negative") + "/first_response.txt");
     }
 
-    public static string RandomPositiveResponse() {
-        var lines = GetAllLinesByPath("responses/positive/responses.txt");
+    public static string RandomResponse(bool isPositive = true) {
+        var lines = GetAllLinesByPath("responses/" + (isPositive ? "positive" : "negative") + "/responses.txt");
         return lines[UnityEngine.Random.Range(0, lines.Length)];
     }
-    
+
+    public static string RandomRequestIntro() {
+        var lines = GetAllLinesByPath("requests/request_intros.txt");
+        return lines[UnityEngine.Random.Range(0, lines.Length)];
+    }
+
+    public static string RandomTextRequest() {
+        return "Do you like me, test subject 34992?\tyes";
+    }
+
 }
 
