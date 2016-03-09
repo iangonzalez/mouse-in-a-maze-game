@@ -111,3 +111,19 @@ public class TouchCornersInterchange : PathInterchange {
     }
 }
 
+public class LockPlayerInRoomInterchange : AiPlayerInterchange {
+
+    public float timeLocked = 10.0f;
+
+    public override bool CheckIfCorrectResponse(PlayerResponse response) {
+        return true;
+    }
+
+    public override string GetQuestionText() {
+        return "I'm going to lock you in this room for " + timeLocked + " seconds. Have fun!";
+    }
+
+    public override string GetResponseToPlayerText(bool responseIsPositive) {
+        return "Thanks for waiting! And no, I won't tell you why I did that.";
+    }
+}

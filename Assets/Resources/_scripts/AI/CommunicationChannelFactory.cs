@@ -45,5 +45,16 @@ public static class CommunicationChannelFactory {
             return commObj.GetComponent<RoomExitPathCommChannel>();
         }
     }
+
+    public static CommunicationChannel MakeOneWayTimedChannel() {
+        var commObj = InstantiatePrefabAtPath("prefabs/OneWayTimedComm");
+        if (commObj == null) {
+            Debug.Log("prefab instantiation in factory is null");
+            return null;
+        }
+        else {
+            return commObj.GetComponent<OneWayTimedCommChannel>();
+        }
+    }
 }
 

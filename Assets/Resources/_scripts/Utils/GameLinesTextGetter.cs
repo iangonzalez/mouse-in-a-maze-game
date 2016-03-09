@@ -7,40 +7,46 @@ using UnityEngine;
 
 
 public static class GameLinesTextGetter {
-    private static string linesDirectory = Application.dataPath + "/GameLines/";
+    private static string linesDirectory = "GameLines/";
 
     private static string GetAllTextByPath(string subPath) {
-        return File.ReadAllText(linesDirectory + subPath);
+        TextAsset textAsset = Resources.Load(linesDirectory + subPath) as TextAsset;
+        return textAsset.text;
     }
 
     private static string[] GetAllLinesByPath(string subPath) {
-        return File.ReadAllLines(linesDirectory + subPath);
+        TextAsset responses = Resources.Load(linesDirectory + subPath) as TextAsset;
+        string[] lines = responses.text.Split(new char[] { '\n' });
+        return lines;
     }
 
     public static string OpeningMonologue() {
-        return GetAllTextByPath("beginning/opening_monologue.txt");
+        return GetAllTextByPath("beginning/opening_monologue");
     }
 
     public static string FirstRequest() {
-        return GetAllTextByPath("requests/first_request.txt");
+        return GetAllTextByPath("beginning/first_request");
     }
 
     public static string FirstResponse(bool isPositive = true) {
-        return GetAllTextByPath( "responses/" +  (isPositive ? "positive" : "negative") + "/first_response.txt");
+        string locationStr = "responses/" + (isPositive ? "positive" : "negative") + "/first_response";
+        return GetAllTextByPath(locationStr);
     }
 
     public static string RandomResponse(bool isPositive = true) {
-        var lines = GetAllLinesByPath("responses/" + (isPositive ? "positive" : "negative") + "/responses.txt");
+        string locationStr = "responses/" + (isPositive ? "positive" : "negative") + "/responses";
+        string[] lines = GetAllLinesByPath(locationStr);
         return lines[UnityEngine.Random.Range(0, lines.Length)];
     }
 
     public static string RandomRequestIntro() {
-        var lines = GetAllLinesByPath("requests/request_intros.txt");
+        string locationStr = "requests/request_intros";
+        string[] lines = GetAllLinesByPath(locationStr);
         return lines[UnityEngine.Random.Range(0, lines.Length)];
     }
 
     public static string RandomTextRequest() {
-        var lines = GetAllLinesByPath("requests/text_requests/requests.txt");
+        string[] lines = GetAllLinesByPath("requests/text_requests/requests");
         return lines[UnityEngine.Random.Range(0, lines.Length)];
     }
 

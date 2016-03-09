@@ -77,6 +77,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Resources\GameLines\beginning\first_request.txt" />
+    <Content Include="Assets\Resources\GameLines\beginning\opening_monologue.txt" />
+    <Content Include="Assets\Resources\GameLines\requests\first_request.txt" />
+    <Content Include="Assets\Resources\GameLines\requests\request_intros.txt" />
+    <Content Include="Assets\Resources\GameLines\requests\text_requests\requests.txt" />
+    <Content Include="Assets\Resources\GameLines\responses\negative\first_response.txt" />
+    <Content Include="Assets\Resources\GameLines\responses\negative\responses.txt" />
+    <Content Include="Assets\Resources\GameLines\responses\negative\very_negative\responses.txt" />
+    <Content Include="Assets\Resources\GameLines\responses\positive\first_response.txt" />
+    <Content Include="Assets\Resources\GameLines\responses\positive\responses.txt" />
     <Content Include="Assets\Resources\_scripts\Graph.dll" />
     <Content Include="Assets\Resources\_scripts\Graph.dll.mdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -95,10 +105,11 @@
     <Compile Include="Assets\Resources\_scripts\AI\CommunicationChannel.cs" />
     <Compile Include="Assets\Resources\_scripts\AI\CommunicationChannelFactory.cs" />
     <Compile Include="Assets\Resources\_scripts\AI\GameAI.cs" />
+    <Compile Include="Assets\Resources\_scripts\AI\OneWayTimedCommChannel.cs" />
     <Compile Include="Assets\Resources\_scripts\AI\PathCommuncationChannel.cs" />
     <Compile Include="Assets\Resources\_scripts\AI\PlayerPath.cs" />
     <Compile Include="Assets\Resources\_scripts\AI\RoomExitPathCommChannel.cs" />
-    <Compile Include="Assets\Resources\_scripts\AI\TimedPathCommChannel.cs" />
+    <Compile Include="Assets\Resources\_scripts\AI\TimedCommChannel.cs" />
     <Compile Include="Assets\Resources\_scripts\GameManager.cs" />
     <Compile Include="Assets\Resources\_scripts\Maze\Maze.cs" />
     <Compile Include="Assets\Resources\_scripts\Maze\MazeCell.cs" />
@@ -115,6 +126,7 @@
     <Compile Include="Assets\Resources\_scripts\Utils\GameLinesTextGetter.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Resources\GameLines\game_script.docx" />
     <None Include="Assets\Resources\prefabs\AIText.prefab" />
     <None Include="Assets\Resources\prefabs\GameAI.prefab" />
     <None Include="Assets\Resources\prefabs\Maze.prefab" />

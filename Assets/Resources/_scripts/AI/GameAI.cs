@@ -26,6 +26,7 @@ public class GameAI : MonoBehaviour {
     private TextCommunicationChannel textCommChannel;
     private OneWayTextCommunication oneWayCommChannel;
     private RoomExitPathCommChannel roomExitCommChannel;
+    private OneWayTimedCommChannel oneWayTimedComm;
 
     private string receivedPlayerMessage;
     private IntVector2 playerCurrentCoords;
@@ -42,12 +43,15 @@ public class GameAI : MonoBehaviour {
 
     private Dictionary<AIAlignmentState, List<Action>> perStateActionList;
 
+    private System.Random rng;
+
     private void Start() {
 
         //init communcation channels 
         textCommChannel = CommunicationChannelFactory.Make2WayTextChannel() as TextCommunicationChannel;
         oneWayCommChannel = CommunicationChannelFactory.MakeOneWayTextChannel() as OneWayTextCommunication;
         roomExitCommChannel = CommunicationChannelFactory.MakeRoomExitPathChannel() as RoomExitPathCommChannel;
+        oneWayTimedComm = CommunicationChannelFactory.MakeOneWayTimedChannel() as OneWayTimedCommChannel;
 
         playerCurrentCoords = player.MazeCellCoords;
 
@@ -57,6 +61,8 @@ public class GameAI : MonoBehaviour {
 
         //initialize list of possible actions (for each state)
         InitializeActionLists();
+
+        rng = new System.Random();
     }
 
     //code to intialize the action lists for each state based on the AI's player-affecting methods.
@@ -64,7 +70,6 @@ public class GameAI : MonoBehaviour {
     #region
     //helper function to convert a list of methodInfo objects into Actions
     private List<Action> GetActionListFromMethodInfos(IEnumerable<MethodInfo> methodInfos) {
-        //Action.
         return new List<Action> (methodInfos.Select(m => (Action)Delegate.CreateDelegate(typeof(Action), this, m, false)));
     }
 
@@ -84,14 +89,13 @@ public class GameAI : MonoBehaviour {
 
         //get the methods of this type
         var aiMethods = typeof(GameAI).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-        Debug.Log(aiMethods.Length);
 
         //get the actions for Neutral first
         var neutralMethods = FilterMethodInfosByNameStart(aiMethods, "Neutral_");
-        Debug.Log(neutralMethods.Count());
         var neutralActions = GetActionListFromMethodInfos(neutralMethods);
-        Debug.Log(neutralActions.Count);
-        
+        neutralActions.Add(NullAction);
+
+
         foreach (AIAlignmentState state in Enum.GetValues(typeof(AIAlignmentState))) {
             string stateName = state.ToString();
             
@@ -140,13 +144,14 @@ public class GameAI : MonoBehaviour {
             }
             else {
                 var possibleActions = perStateActionList[aiAlignmentState];
-                int randIdx = UnityEngine.Random.Range(0, possibleActions.Count);
+                int randIdx = rng.Next(0, possibleActions.Count);
+                //Debug.LogError(possibleActions.Count);
+                //Debug.LogError(randIdx);
+
                 Action randAction = possibleActions[randIdx];
                 randAction();
             }
         }
-
-        //Debug.Log(aiCommState.ToString());
     }
 
     /// <summary>
@@ -211,6 +216,10 @@ public class GameAI : MonoBehaviour {
     /// actions randomly depending on its current alignment state.
     /// </summary>
 
+    private void NullAction() {
+        return;
+    }
+
     // Neutral AI actions
     #region
     private void Neutral_AskPlayerToTouchCorners() {
@@ -225,7 +234,16 @@ public class GameAI : MonoBehaviour {
         currentInterchange = new TextOnlyInterchange();
         SendMessageToPlayer(currentInterchange.GetQuestionText(), textCommChannel);
     }
-    #endregion
 
-    
+    private void Neutral_LockPlayerInRoom() {
+        maze.CloseDoorsInCell(playerCurrentCoords);
+        var interchange = new LockPlayerInRoomInterchange() as LockPlayerInRoomInterchange;
+        interchange.timeLocked = 5.0f;
+        currentInterchange = interchange;
+
+        oneWayTimedComm.SetTimeToWait(5.0f);
+
+        SendMessageToPlayer(currentInterchange.GetQuestionText(), oneWayTimedComm);
+    }
+    #endregion 
 }
