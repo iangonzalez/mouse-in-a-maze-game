@@ -81,6 +81,9 @@
     <Content Include="Assets\Resources\GameLines\beginning\opening_monologue.txt" />
     <Content Include="Assets\Resources\GameLines\requests\first_request.txt" />
     <Content Include="Assets\Resources\GameLines\requests\request_intros.txt" />
+    <Content Include="Assets\Resources\GameLines\requests\text_requests\Friendly\requests.txt" />
+    <Content Include="Assets\Resources\GameLines\requests\text_requests\Hostile\requests.txt" />
+    <Content Include="Assets\Resources\GameLines\requests\text_requests\Neutral\requests.txt" />
     <Content Include="Assets\Resources\GameLines\requests\text_requests\requests.txt" />
     <Content Include="Assets\Resources\GameLines\responses\negative\first_response.txt" />
     <Content Include="Assets\Resources\GameLines\responses\negative\responses.txt" />

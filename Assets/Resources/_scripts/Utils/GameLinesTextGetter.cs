@@ -1,9 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 
 
 public static class GameLinesTextGetter {
@@ -45,8 +40,8 @@ public static class GameLinesTextGetter {
         return lines[UnityEngine.Random.Range(0, lines.Length)];
     }
 
-    public static string RandomTextRequest() {
-        string[] lines = GetAllLinesByPath("requests/text_requests/requests");
+    public static string RandomTextRequest(AIAlignmentState state = AIAlignmentState.Neutral) {
+        string[] lines = GetAllLinesByPath("requests/text_requests/" + state.ToString() + "/requests");
         return lines[UnityEngine.Random.Range(0, lines.Length)];
     }
 

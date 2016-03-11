@@ -257,16 +257,7 @@ public class GameAI : MonoBehaviour {
         SendMessageToPlayer(currentInterchange.GetQuestionText(), textCommChannel);
     }
 
-    private void Neutral_LockPlayerInRoom() {
-        maze.CloseDoorsInCell(playerCurrentCoords);
-        var interchange = new LockPlayerInRoomInterchange(aiAlignmentState);
-        interchange.timeLocked = 5.0f;
-        currentInterchange = interchange;
-
-        oneWayTimedComm.SetTimeToWait(5.0f);
-
-        SendMessageToPlayer(currentInterchange.GetQuestionText(), oneWayTimedComm);
-    }
+    
     #endregion
 
     //Hostile AI actions
@@ -276,6 +267,21 @@ public class GameAI : MonoBehaviour {
         SendMessageToPlayer("I'm so angry at you!", oneWayCommChannel);
     }
 
+    private void Hostile_MakeTextRequestToPlayer() {
+        Neutral_MakeTextRequestToPlayer();
+    }
+
+    private void Hostile_LockPlayerInRoom() {
+        maze.CloseDoorsInCell(playerCurrentCoords);
+        var interchange = new LockPlayerInRoomInterchange(aiAlignmentState);
+        interchange.timeLocked = 5.0f;
+        currentInterchange = interchange;
+
+        oneWayTimedComm.SetTimeToWait(5.0f);
+
+        SendMessageToPlayer(currentInterchange.GetQuestionText(), oneWayTimedComm);
+    }
+
     #endregion
 
     //Friendly AI actions
@@ -283,6 +289,10 @@ public class GameAI : MonoBehaviour {
 
     private void Friendly_SendHappyMessage() {
         SendMessageToPlayer("I love you so much!", oneWayCommChannel);
+    }
+
+    private void Friendly_MakeTextRequestToPlayer() {
+        Neutral_MakeTextRequestToPlayer();
     }
 
     #endregion

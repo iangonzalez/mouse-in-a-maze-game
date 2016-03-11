@@ -39,7 +39,7 @@ public class TextOnlyInterchange : AiPlayerInterchange {
 
     public TextOnlyInterchange(AIAlignmentState state) : base(state) {
         expectedResponse = new PlayerResponse();
-        string[] randQuestionAnswer = GameLinesTextGetter.RandomTextRequest().Split(new char[] { '\t' });
+        string[] randQuestionAnswer = GameLinesTextGetter.RandomTextRequest(state).Split(new char[] { '\t' });
         question = randQuestionAnswer[0];
         expectedResponse.responseStr = randQuestionAnswer[1];
     }
