@@ -124,6 +124,7 @@
     <Compile Include="Assets\Resources\_scripts\AI\PlayerResponse.cs" />
     <Compile Include="Assets\Resources\_scripts\AI\TextCommunicationChannel.cs" />
     <Compile Include="Assets\Resources\_scripts\Utils\GameLinesTextGetter.cs" />
+    <Compile Include="Assets\Resources\_scripts\Utils\ThreeState.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Resources\GameLines\game_script.docx" />

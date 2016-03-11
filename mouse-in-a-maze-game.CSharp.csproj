@@ -91,6 +91,7 @@
     <Compile Include="Assets\Resources\_scripts\Maze\MazeWall.cs" />
     <Compile Include="Assets\Resources\_scripts\Player\Player.cs" />
     <Compile Include="Assets\Resources\_scripts\Utils\GameLinesTextGetter.cs" />
+    <Compile Include="Assets\Resources\_scripts\Utils\ThreeState.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Resources\GameLines\beginning\first_request.txt" />

@@ -4,25 +4,29 @@ using System.Linq;
 using System.Text;
 
 public abstract class AiPlayerInterchange {
+    private AIAlignmentState aiState;
     public PlayerResponse expectedResponse;
 
     protected bool isFirst = false;
     
 
-    public AiPlayerInterchange() {
+    public AiPlayerInterchange(AIAlignmentState state) {
+        aiState = state;
         expectedResponse = new PlayerResponse();
     }
 
-    public AiPlayerInterchange(PlayerResponse expected) {
+    public AiPlayerInterchange(AIAlignmentState state, PlayerResponse expected) {
+        aiState = state;
         expectedResponse = expected;
     }
 
-    public AiPlayerInterchange(PlayerResponse expected, bool firstInterchange) {
+    public AiPlayerInterchange(AIAlignmentState state, PlayerResponse expected, bool firstInterchange) {
+        aiState = state;
         expectedResponse = expected;
         isFirst = firstInterchange;
     }
 
-    public abstract bool CheckIfCorrectResponse(PlayerResponse response);
+    public abstract ThreeState CheckIfCorrectResponse(PlayerResponse response);
     public abstract string GetQuestionText();
     public abstract string GetResponseToPlayerText(bool responseIsPositive);
 }
@@ -33,15 +37,15 @@ public class TextOnlyInterchange : AiPlayerInterchange {
     //idea: write the lines here as tuples: (question, expected answer)
     //this can then pick a random line and know the question and expected answer
 
-    public TextOnlyInterchange() {
+    public TextOnlyInterchange(AIAlignmentState state) : base(state) {
         expectedResponse = new PlayerResponse();
         string[] randQuestionAnswer = GameLinesTextGetter.RandomTextRequest().Split(new char[] { '\t' });
         question = randQuestionAnswer[0];
         expectedResponse.responseStr = randQuestionAnswer[1];
     }
 
-    public override bool CheckIfCorrectResponse(PlayerResponse response) {
-        return expectedResponse.responseStr == response.responseStr;
+    public override ThreeState CheckIfCorrectResponse(PlayerResponse response) {
+        return (expectedResponse.responseStr == response.responseStr).ToThreeState();
     }
 
     //todo: change these two methods to be text only specific
@@ -57,25 +61,19 @@ public class TextOnlyInterchange : AiPlayerInterchange {
 
 public abstract class PathInterchange : AiPlayerInterchange {
 
-    public PathInterchange() {
+    public PathInterchange(AIAlignmentState state) : base(state) {   }
 
-    }
+    public PathInterchange(AIAlignmentState state, PlayerResponse expected) : base(state, expected) {   }
 
-    public PathInterchange(PlayerResponse expected) {
-        expectedResponse = expected;
-    }
+    public PathInterchange(AIAlignmentState state, PlayerResponse expected, bool firstInterchange)
+        : base(state, expected, firstInterchange) {   }
 
-    public PathInterchange(PlayerResponse expected, bool firstInterchange) {
-        expectedResponse = expected;
-        isFirst = firstInterchange;
-    }
-
-    public override bool CheckIfCorrectResponse(PlayerResponse response) {
+    public override ThreeState CheckIfCorrectResponse(PlayerResponse response) {
         if (response.pathInOrder) {
-            return response.playerPath.ArePointsInCorrectOrder();
+            return response.playerPath.ArePointsInCorrectOrder().ToThreeState();
         }
         else {
-            return response.playerPath.WereAllPointsTraversed();
+            return response.playerPath.WereAllPointsTraversed().ToThreeState();
         }
     }
 
@@ -92,13 +90,10 @@ public abstract class PathInterchange : AiPlayerInterchange {
 
 public class TouchCornersInterchange : PathInterchange {
 
-    public TouchCornersInterchange(PlayerResponse response, bool first) : base(response, first) {
+    public TouchCornersInterchange(AIAlignmentState state, PlayerResponse response, bool first) 
+        : base(state, response, first) {    }
 
-    }
-
-    public TouchCornersInterchange(PlayerResponse response) : base(response) {
-
-    }
+    public TouchCornersInterchange(AIAlignmentState state, PlayerResponse response) : base(state, response) {   }
 
     public override string GetQuestionText() {
         //change this to be path specific
@@ -113,10 +108,12 @@ public class TouchCornersInterchange : PathInterchange {
 
 public class LockPlayerInRoomInterchange : AiPlayerInterchange {
 
+    public LockPlayerInRoomInterchange(AIAlignmentState state) : base(state) {  }
+
     public float timeLocked = 10.0f;
 
-    public override bool CheckIfCorrectResponse(PlayerResponse response) {
-        return true;
+    public override ThreeState CheckIfCorrectResponse(PlayerResponse response) {
+        return ThreeState.Neutral;
     }
 
     public override string GetQuestionText() {

@@ -45,6 +45,8 @@ public class GameAI : MonoBehaviour {
 
     private System.Random rng;
 
+    private int numberOfInfractions = 0;
+
     private void Start() {
 
         //init communcation channels 
@@ -106,7 +108,8 @@ public class GameAI : MonoBehaviour {
             //all other states get actions that start with their name and Neutral
             else {
                 var stateActions = GetActionListFromMethodInfos(FilterMethodInfosByNameStart(aiMethods, stateName + "_"));
-                perStateActionList[state] = new List<Action>(neutralActions.Concat(stateActions));
+                //perStateActionList[state] = new List<Action>(neutralActions.Concat(stateActions));
+                perStateActionList[state] = stateActions;
             }
             
         }
@@ -166,8 +169,26 @@ public class GameAI : MonoBehaviour {
             return;
         }
 
-        bool wasResponseCorrect = currentInterchange.CheckIfCorrectResponse(response);
-        SendMessageToPlayer(currentInterchange.GetResponseToPlayerText(wasResponseCorrect), oneWayCommChannel);
+        ThreeState wasResponseCorrect = currentInterchange.CheckIfCorrectResponse(response);
+        SendMessageToPlayer(currentInterchange.GetResponseToPlayerText(wasResponseCorrect.ToBool()), oneWayCommChannel);
+
+        if (wasResponseCorrect != ThreeState.Neutral) {
+            StateTransition(wasResponseCorrect.ToBool());
+        }
+    }
+
+    private void StateTransition(bool responseWasPositive) {
+        Debug.Log(numberOfInfractions);
+        numberOfInfractions += (responseWasPositive ? -1 : 1);
+        if (numberOfInfractions <= 2 && numberOfInfractions >= -2) {
+            aiAlignmentState = AIAlignmentState.Neutral;
+        }
+        else if (numberOfInfractions < -2) {
+            aiAlignmentState = AIAlignmentState.Friendly;
+        }
+        else if (numberOfInfractions > 2) {
+            aiAlignmentState = AIAlignmentState.Hostile;
+        }
     }
     #endregion
 
@@ -224,20 +245,21 @@ public class GameAI : MonoBehaviour {
     #region
     private void Neutral_AskPlayerToTouchCorners() {
         var pathToFollow = GetPlayerCornerPath();
-        var cornerInterchange = new TouchCornersInterchange(new PlayerResponse(pathToFollow, false), 
+        var cornerInterchange = new TouchCornersInterchange(aiAlignmentState,
+                                                            new PlayerResponse(pathToFollow, false), 
                                                             !firstInterchangeDone);
         RequestPlayerToFollowPath(cornerInterchange, roomExitCommChannel);
     }
 
     private void Neutral_MakeTextRequestToPlayer() {
         maze.CloseDoorsInCell(playerCurrentCoords);
-        currentInterchange = new TextOnlyInterchange();
+        currentInterchange = new TextOnlyInterchange(aiAlignmentState);
         SendMessageToPlayer(currentInterchange.GetQuestionText(), textCommChannel);
     }
 
     private void Neutral_LockPlayerInRoom() {
         maze.CloseDoorsInCell(playerCurrentCoords);
-        var interchange = new LockPlayerInRoomInterchange() as LockPlayerInRoomInterchange;
+        var interchange = new LockPlayerInRoomInterchange(aiAlignmentState);
         interchange.timeLocked = 5.0f;
         currentInterchange = interchange;
 
@@ -245,5 +267,23 @@ public class GameAI : MonoBehaviour {
 
         SendMessageToPlayer(currentInterchange.GetQuestionText(), oneWayTimedComm);
     }
-    #endregion 
+    #endregion
+
+    //Hostile AI actions
+    #region
+
+    private void Hostile_SendAngryMessage() {
+        SendMessageToPlayer("I'm so angry at you!", oneWayCommChannel);
+    }
+
+    #endregion
+
+    //Friendly AI actions
+    #region
+
+    private void Friendly_SendHappyMessage() {
+        SendMessageToPlayer("I love you so much!", oneWayCommChannel);
+    }
+
+    #endregion
 }
