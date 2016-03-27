@@ -116,11 +116,11 @@ public class Maze : MonoBehaviour {
 
         newHallway.transform.parent = transform;
         newHallway.transform.localPosition = hallwayPosition;
-        newHallway.transform.localScale = new Vector3(RoomSeparationDistance - 0.95f, 0.6f, 0.41f);
+        newHallway.StretchHallway(new Vector3(RoomSeparationDistance - 0.95f, 0.6f, 0.41f));
 
         //decide which way the hallway should be rotated
         if (cellCoord1.z != cellCoord2.z) {
-            newHallway.transform.rotation = Quaternion.Euler(0f, 90f, 0f);
+            newHallway.RotateHallway();
         }
     }
 

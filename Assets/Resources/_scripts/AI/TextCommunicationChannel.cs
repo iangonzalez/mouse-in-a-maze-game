@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// Text communcation channel (two way). Provides a text box where the player can send a response.
@@ -28,7 +27,7 @@ public class TextCommunicationChannel : CommunicationChannel {
         InitializeChannelFields(player, ai);
 
         //restrict players movements
-        player.BeginTextCommunicationWithPlayer();
+        player.FreezePlayer();
 
         CreateTextBoxes();
 
@@ -53,7 +52,7 @@ public class TextCommunicationChannel : CommunicationChannel {
         DestroyTextBoxes();
 
         //allow the player to move again
-        player.EndTextCommunicationWithPlayer();
+        player.UnfreezePlayer();
 
         //reset these fields so channel is dead
         player = null;

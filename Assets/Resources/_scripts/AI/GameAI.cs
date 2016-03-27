@@ -41,7 +41,8 @@ public class GameAI : MonoBehaviour {
 
     private AiPlayerInterchange currentInterchange;
 
-    private Dictionary<AIAlignmentState, List<Action>> perStateActionList;
+    private Dictionary<AIAlignmentState, List<Action>> perStateRequestActionList;
+    private Dictionary<AIAlignmentState, List<Action>> perStateReactionList;
 
     private System.Random rng;
 
@@ -80,6 +81,13 @@ public class GameAI : MonoBehaviour {
         return methodInfos.Where(m => m.Name.StartsWith(nameStart));
     }
 
+    //helper function to combine the above 2 and add any extra needed actions to the list (only null action right now)
+    private List<Action> GetActionsByNameStart(IEnumerable<MethodInfo> methodInfos, string nameStart) {
+        var actions = GetActionListFromMethodInfos(FilterMethodInfosByNameStart(methodInfos, nameStart));
+        actions.Add(NullAction);
+        return actions;
+    }
+
     /// <summary>
     /// Initialize the action lists for each alignment state. This gets every 0-param, void-returning method in the object
     /// that starts with the state's name (plus "_") and puts it in a list for that state.
@@ -87,31 +95,19 @@ public class GameAI : MonoBehaviour {
     /// Note that ALL methods designated as state actions with a State + _ name must be void return type and take no arguments for this to work.
     /// </summary>
     private void InitializeActionLists() {
-        perStateActionList = new Dictionary<AIAlignmentState, List<Action>>();
+        perStateRequestActionList = new Dictionary<AIAlignmentState, List<Action>>();
 
         //get the methods of this type
         var aiMethods = typeof(GameAI).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-
-        //get the actions for Neutral first
-        var neutralMethods = FilterMethodInfosByNameStart(aiMethods, "Neutral_");
-        var neutralActions = GetActionListFromMethodInfos(neutralMethods);
-        neutralActions.Add(NullAction);
-
-
+        
         foreach (AIAlignmentState state in Enum.GetValues(typeof(AIAlignmentState))) {
             string stateName = state.ToString();
-            
-            //Neutral gets only neutral actions
-            if (state == AIAlignmentState.Neutral) {
-                perStateActionList[state] = neutralActions;
-            }
-            //all other states get actions that start with their name and Neutral
-            else {
-                var stateActions = GetActionListFromMethodInfos(FilterMethodInfosByNameStart(aiMethods, stateName + "_"));
-                //perStateActionList[state] = new List<Action>(neutralActions.Concat(stateActions));
-                perStateActionList[state] = stateActions;
-            }
-            
+
+            //add the request methods to the list for request methods for each state
+            perStateRequestActionList[state] = GetActionsByNameStart(aiMethods, stateName + "_Request_");
+
+            //add the reaction methods to the list for reaction methods for each state
+            perStateReactionList[state] = GetActionsByNameStart(aiMethods, stateName + "_Reaction_");
         }
     }
     #endregion
@@ -120,6 +116,17 @@ public class GameAI : MonoBehaviour {
     //Main business logic. Contains update function (called every frame), code to initiate actions/communications
     //with player, handle responses, and change alignment states
     #region
+    private void ExecuteRandomAction(List<Action> possibleActions) {
+        if (possibleActions.Count == 0) {
+            NullAction();
+            return;
+        }
+
+        int randIdx = rng.Next(0, possibleActions.Count);
+        Action randAction = possibleActions[randIdx];
+        randAction();
+    }
+
     private void Update() {
         //if in communcation, check for response, call handler on response if there
         if (aiCommState == AICommunicationState.InCommunication) {
@@ -135,24 +142,18 @@ public class GameAI : MonoBehaviour {
             }
         }
         else if (!openingDone) {
-            maze.CloseDoorsInCell(playerCurrentCoords);
-            SendMessageToPlayer(GameLinesTextGetter.OpeningMonologue(), oneWayCommChannel);
+            //maze.CloseDoorsInCell(playerCurrentCoords);
+            //SendMessageToPlayer(GameLinesTextGetter.OpeningMonologue(), oneWayCommChannel);
             openingDone = true;
         }
         else if (playerCurrentCoords != player.MazeCellCoords) {
             playerCurrentCoords = player.MazeCellCoords;
             if (!firstInterchangeDone) {
-                Neutral_AskPlayerToTouchCorners();
+                Neutral_Request_AskPlayerToTouchCorners();
                 firstInterchangeDone = true;
             }
             else {
-                var possibleActions = perStateActionList[aiAlignmentState];
-                int randIdx = rng.Next(0, possibleActions.Count);
-                //Debug.LogError(possibleActions.Count);
-                //Debug.LogError(randIdx);
-
-                Action randAction = possibleActions[randIdx];
-                randAction();
+                ExecuteRandomAction(perStateRequestActionList[aiAlignmentState]);
             }
         }
     }
@@ -170,11 +171,14 @@ public class GameAI : MonoBehaviour {
         }
 
         ThreeState wasResponseCorrect = currentInterchange.CheckIfCorrectResponse(response);
-        SendMessageToPlayer(currentInterchange.GetResponseToPlayerText(wasResponseCorrect.ToBool()), oneWayCommChannel);
+        string responseText = currentInterchange.GetResponseToPlayerText(wasResponseCorrect.ToBool());
+        SendMessageToPlayer(responseText, oneWayCommChannel);
 
         if (wasResponseCorrect != ThreeState.Neutral) {
             StateTransition(wasResponseCorrect.ToBool());
         }
+
+        ExecuteRandomAction(perStateReactionList[aiAlignmentState]);
     }
 
     private void StateTransition(bool responseWasPositive) {
@@ -243,7 +247,7 @@ public class GameAI : MonoBehaviour {
 
     // Neutral AI actions
     #region
-    private void Neutral_AskPlayerToTouchCorners() {
+    private void Neutral_Request_AskPlayerToTouchCorners() {
         var pathToFollow = GetPlayerCornerPath();
         var cornerInterchange = new TouchCornersInterchange(aiAlignmentState,
                                                             new PlayerResponse(pathToFollow, false), 
@@ -251,10 +255,14 @@ public class GameAI : MonoBehaviour {
         RequestPlayerToFollowPath(cornerInterchange, roomExitCommChannel);
     }
 
-    private void Neutral_MakeTextRequestToPlayer() {
+    private void Neutral_Request_MakeTextRequestToPlayer() {
         maze.CloseDoorsInCell(playerCurrentCoords);
         currentInterchange = new TextOnlyInterchange(aiAlignmentState);
         SendMessageToPlayer(currentInterchange.GetQuestionText(), textCommChannel);
+    }
+
+    private void Neutral_Reaction_SayANeutralPhrase() {
+        //TODO: Add code for the AI to say some banal thing.
     }
 
     
@@ -263,15 +271,15 @@ public class GameAI : MonoBehaviour {
     //Hostile AI actions
     #region
 
-    private void Hostile_SendAngryMessage() {
+    private void Hostile_Request_SendAngryMessage() {
         SendMessageToPlayer("I'm so angry at you!", oneWayCommChannel);
     }
 
-    private void Hostile_MakeTextRequestToPlayer() {
-        Neutral_MakeTextRequestToPlayer();
+    private void Hostile_Request_MakeTextRequestToPlayer() {
+        Neutral_Request_MakeTextRequestToPlayer();
     }
 
-    private void Hostile_LockPlayerInRoom() {
+    private void Hostile_Request_LockPlayerInRoom() {
         maze.CloseDoorsInCell(playerCurrentCoords);
         var interchange = new LockPlayerInRoomInterchange(aiAlignmentState);
         interchange.timeLocked = 5.0f;
@@ -282,17 +290,25 @@ public class GameAI : MonoBehaviour {
         SendMessageToPlayer(currentInterchange.GetQuestionText(), oneWayTimedComm);
     }
 
+    private void Hostile_Reaction_TurnLightsRed() {
+        //TODO: Code here to turn the lights in the maze red.
+    }
+
     #endregion
 
     //Friendly AI actions
     #region
 
-    private void Friendly_SendHappyMessage() {
+    private void Friendly_Request_SendHappyMessage() {
         SendMessageToPlayer("I love you so much!", oneWayCommChannel);
     }
 
-    private void Friendly_MakeTextRequestToPlayer() {
-        Neutral_MakeTextRequestToPlayer();
+    private void Friendly_Request_MakeTextRequestToPlayer() {
+        Neutral_Request_MakeTextRequestToPlayer();
+    }
+
+    private void Friendly_Reaction_GiveHint() {
+        //TODO: Code here to have the AI give a hint to the player.
     }
 
     #endregion

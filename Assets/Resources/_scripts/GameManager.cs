@@ -30,7 +30,7 @@ public class GameManager : MonoBehaviour {
 	    if (Input.GetKeyDown(KeyCode.Z)) {
             SwitchCameraView();
         }
-
+        
         //check if player has reached the end
         if (playerInstance.InCell &&
             playerInstance.MazeCellCoords.x == exitCellCoords.x &&
@@ -57,6 +57,7 @@ public class GameManager : MonoBehaviour {
  
         playerInstance = Instantiate(playerPrefab) as Player;
 
+        
         IntVector2 playerStartCoords = mazeInstance.PlacePlayerInMaze(playerInstance);
         exitCellCoords = mazeInstance.PlaceExitCell(playerStartCoords);
 
@@ -66,7 +67,7 @@ public class GameManager : MonoBehaviour {
         
         playerInstance.EnablePlayerCamera();
     }
-    
+
     private void RestartGame() {
         StopAllCoroutines();
         Destroy(mazeInstance.gameObject);

@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
@@ -30,7 +29,7 @@ public abstract class CommunicationChannel : MonoBehaviour {
     protected int lineIdx;
     
 
-    //methods that have to be implemented by children (provide interface for interaction, see GameAI.cs)
+    //methods that have to be implemented by children (provide interface for interaction, see GameAI.cs for example)
     protected abstract void Update();
     abstract public void StartCommunicationWithPlayer(Player player, GameAI ai, string message);
     abstract public bool IsResponseReceived();

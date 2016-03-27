@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-public struct PlayerResponse {
+﻿public struct PlayerResponse {
     public string responseStr;
     public PlayerPath playerPath;
     public bool pathInOrder;

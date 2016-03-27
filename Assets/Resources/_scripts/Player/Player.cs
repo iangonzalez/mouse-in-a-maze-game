@@ -1,9 +1,8 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public enum PlayerState {
     Active,
-    InTextCommunication
+    Frozen
 }
 
 public class Player : MonoBehaviour {
@@ -75,7 +74,7 @@ public class Player : MonoBehaviour {
     /// Physics update based on arrow key input
     /// </summary>
     void FixedUpdate() {
-        if (currentState == PlayerState.InTextCommunication) {
+        if (currentState == PlayerState.Frozen) {
             return;
         }
 
@@ -114,6 +113,10 @@ public class Player : MonoBehaviour {
 
 
     void Update() {
+        if (currentState == PlayerState.Frozen) {
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.Space)) {
             DropBreadCrumb();
         }
@@ -157,11 +160,11 @@ public class Player : MonoBehaviour {
         playerCamera.enabled = false;
     }
 
-    public void BeginTextCommunicationWithPlayer() {
-        currentState = PlayerState.InTextCommunication;
+    public void FreezePlayer() {
+        currentState = PlayerState.Frozen;
     }
 
-    public void EndTextCommunicationWithPlayer() {
+    public void UnfreezePlayer() {
         currentState = PlayerState.Active;
     }
 }

@@ -9,7 +9,7 @@ public class OneWayTextCommunication : TextCommunicationChannel {
         InitializeChannelFields(player, ai);
 
         //restrict players movements
-        player.BeginTextCommunicationWithPlayer();
+        player.FreezePlayer();
 
         CreateTextBoxes(withPlayerWordBox: false);
 
