@@ -151,6 +151,7 @@ public class GameAI : MonoBehaviour {
         else if (playerCurrentCoords != player.MazeCellCoords) {
             playerCurrentCoords = player.MazeCellCoords;
             if (!firstInterchangeDone) {
+                maze.AddSignpostToCell(playerCurrentCoords, MazeDirection.East);
                 Neutral_Request_AskPlayerToTouchCorners();
                 firstInterchangeDone = true;
             }
@@ -311,7 +312,9 @@ public class GameAI : MonoBehaviour {
 
     private void Friendly_Reaction_GiveHint() {
         //TODO: Code here to have the AI give a hint to the player.
-    }
+        SendMessageToPlayer("Have a hint. You've earned it.", oneWayCommChannel);
 
+    }
+    
     #endregion
 }

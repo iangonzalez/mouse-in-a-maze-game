@@ -114,6 +114,7 @@
     <Compile Include="Assets\Resources\_scripts\AI\RoomExitPathCommChannel.cs" />
     <Compile Include="Assets\Resources\_scripts\AI\TimedCommChannel.cs" />
     <Compile Include="Assets\Resources\_scripts\GameManager.cs" />
+    <Compile Include="Assets\Resources\_scripts\Maze\DirectionalSignPost.cs" />
     <Compile Include="Assets\Resources\_scripts\Maze\Maze.cs" />
     <Compile Include="Assets\Resources\_scripts\Maze\MazeCell.cs" />
     <Compile Include="Assets\Resources\_scripts\Maze\MazeCellEdge.cs" />

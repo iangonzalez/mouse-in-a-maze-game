@@ -242,4 +242,8 @@ public class Maze : MonoBehaviour {
             hallway.TurnLightsRed();
         }
     }
+
+    public void AddSignpostToCell(IntVector2 coords, MazeDirection dir) {
+        cells[coords.x, coords.z].AddSignPost(dir);
+    }
 }

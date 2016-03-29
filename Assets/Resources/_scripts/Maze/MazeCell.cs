@@ -6,6 +6,7 @@ public class MazeCell : MonoBehaviour {
     public int initedEdgeCount = 0;
 
     public MazeExitLadder exitLadderPrefab;
+    public DirectionalSignPost signpostPrefab;
 
     private MazeCellEdge[] edges = new MazeCellEdge[MazeDirections.DirectionCount];
 
@@ -49,9 +50,15 @@ public class MazeCell : MonoBehaviour {
     public void MakeThisExitCell() {
         MazeExitLadder exitLadder = Instantiate(exitLadderPrefab) as MazeExitLadder;
         exitLadder.transform.parent = transform;
-        exitLadder.transform.localPosition = new Vector3(0, 0, 0);
+        exitLadder.transform.localPosition = Vector3.zero;
 
         GameObject cellLamp = transform.Find("lamp_small").gameObject;
         Destroy(cellLamp);
+    }
+
+    public void AddSignPost(MazeDirection dir) {
+        DirectionalSignPost signpost = Instantiate(signpostPrefab) as DirectionalSignPost;
+        signpost.transform.parent = transform;
+        signpost.transform.localPosition = new Vector3(0, 0.5f, 0);
     }
 }
