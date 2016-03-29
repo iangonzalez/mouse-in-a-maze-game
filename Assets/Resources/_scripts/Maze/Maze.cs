@@ -23,7 +23,10 @@ public class Maze : MonoBehaviour {
 
     //scales the entire maze up or down
     public float MazeScale;
-    
+
+    //hold hallways
+    private List<MazeHallway> hallways = new List<MazeHallway>();
+
     //hold the graph and the cells for the maze
     private MazeCell[,] cells;
     private GridGraph MazeGrid;
@@ -122,6 +125,9 @@ public class Maze : MonoBehaviour {
         if (cellCoord1.z != cellCoord2.z) {
             newHallway.RotateHallway();
         }
+
+        //add the hallway to the list
+        hallways.Add(newHallway);
     }
 
     private void CreatePassage(MazeCell cell, MazeCell otherCell, MazeDirection direction) {
@@ -204,7 +210,8 @@ public class Maze : MonoBehaviour {
     }
 
     private void TurnCellIntoExit(IntVector2 exitCoords) {
-        //cells[exitCoords.x, exitCoords.z].transform.localPosition += new Vector3(0, 3.0f, 0);
+        Debug.Log("turning cell into exit");
+        cells[exitCoords.x, exitCoords.z].MakeThisExitCell();
     }
 
     public void CloseDoorsInCell(IntVector2 cellCoords) {
@@ -222,6 +229,17 @@ public class Maze : MonoBehaviour {
 
         foreach (var door in doorsToClose) {
             door.OpenDoor();
+        }
+    }
+
+    public void TurnAllLightsRed() {
+        for (int i = 0; i < size.x; i++) {
+            for (int j = 0; j < size.z; j++) {
+                cells[i, j].TurnLightRed();
+            }
+        }
+        foreach (MazeHallway hallway in hallways) {
+            hallway.TurnLightsRed();
         }
     }
 }

@@ -80,6 +80,7 @@ public class GameManager : MonoBehaviour {
         StopAllCoroutines();
         Destroy(mazeInstance.gameObject);
         Destroy(playerInstance.gameObject);
+        Destroy(gameAiInstance.gameObject);
         Destroy(this);
     }
 }

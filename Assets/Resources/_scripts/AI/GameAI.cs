@@ -96,6 +96,7 @@ public class GameAI : MonoBehaviour {
     /// </summary>
     private void InitializeActionLists() {
         perStateRequestActionList = new Dictionary<AIAlignmentState, List<Action>>();
+        perStateReactionList = new Dictionary<AIAlignmentState, List<Action>>();
 
         //get the methods of this type
         var aiMethods = typeof(GameAI).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
@@ -144,6 +145,7 @@ public class GameAI : MonoBehaviour {
         else if (!openingDone) {
             //maze.CloseDoorsInCell(playerCurrentCoords);
             //SendMessageToPlayer(GameLinesTextGetter.OpeningMonologue(), oneWayCommChannel);
+            //Hostile_Reaction_TurnLightsRed();
             openingDone = true;
         }
         else if (playerCurrentCoords != player.MazeCellCoords) {
@@ -177,7 +179,7 @@ public class GameAI : MonoBehaviour {
         if (wasResponseCorrect != ThreeState.Neutral) {
             StateTransition(wasResponseCorrect.ToBool());
         }
-
+        
         ExecuteRandomAction(perStateReactionList[aiAlignmentState]);
     }
 
@@ -291,7 +293,7 @@ public class GameAI : MonoBehaviour {
     }
 
     private void Hostile_Reaction_TurnLightsRed() {
-        //TODO: Code here to turn the lights in the maze red.
+        maze.TurnAllLightsRed();
     }
 
     #endregion

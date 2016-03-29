@@ -5,6 +5,8 @@ public class MazeCell : MonoBehaviour {
     public IntVector2 coordinates;
     public int initedEdgeCount = 0;
 
+    public MazeExitLadder exitLadderPrefab;
+
     private MazeCellEdge[] edges = new MazeCellEdge[MazeDirections.DirectionCount];
 
     public bool IsFullyInitialized {
@@ -37,5 +39,19 @@ public class MazeCell : MonoBehaviour {
 
     public MazeCellEdge GetEdge(MazeDirection dir) {
         return this.edges[(int)dir];
+    }
+
+    public void TurnLightRed() {
+        Light light = GetComponentInChildren<Light>();
+        light.color = Color.red;
+    }
+
+    public void MakeThisExitCell() {
+        MazeExitLadder exitLadder = Instantiate(exitLadderPrefab) as MazeExitLadder;
+        exitLadder.transform.parent = transform;
+        exitLadder.transform.localPosition = new Vector3(0, 0, 0);
+
+        GameObject cellLamp = transform.Find("lamp_small").gameObject;
+        Destroy(cellLamp);
     }
 }

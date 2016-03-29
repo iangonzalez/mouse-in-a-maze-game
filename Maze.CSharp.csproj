@@ -119,6 +119,7 @@
     <Compile Include="Assets\Resources\_scripts\Maze\MazeCellEdge.cs" />
     <Compile Include="Assets\Resources\_scripts\Maze\MazeDirection.cs" />
     <Compile Include="Assets\Resources\_scripts\Maze\MazeDoor.cs" />
+    <Compile Include="Assets\Resources\_scripts\Maze\MazeExitLadder.cs" />
     <Compile Include="Assets\Resources\_scripts\Maze\MazeHallway.cs" />
     <Compile Include="Assets\Resources\_scripts\Maze\MazePassage.cs" />
     <Compile Include="Assets\Resources\_scripts\Maze\MazeWall.cs" />
