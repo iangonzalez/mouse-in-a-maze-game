@@ -44,6 +44,8 @@ public class Maze : MonoBehaviour {
     public MazeCell GetCell(IntVector2 coordinate) {
         return cells[coordinate.x, coordinate.z];
     }
+
+
     
     /// <summary>
     /// This is the main function for creating the random maze.
@@ -210,7 +212,6 @@ public class Maze : MonoBehaviour {
     }
 
     private void TurnCellIntoExit(IntVector2 exitCoords) {
-        Debug.Log("turning cell into exit");
         cells[exitCoords.x, exitCoords.z].MakeThisExitCell();
     }
 
@@ -243,7 +244,35 @@ public class Maze : MonoBehaviour {
         }
     }
 
-    public void AddSignpostToCell(IntVector2 coords, MazeDirection dir) {
-        cells[coords.x, coords.z].AddSignPost(dir);
+    public void AddSignpostToCell(IntVector2 coords, MazeDirection dir, Vector3 playerPosition) {
+        cells[coords.x, coords.z].AddSignPost(dir, playerPosition);
+    }
+
+    public void RemoveAllSignPosts() {
+        for (int i = 0; i < size.x; i++) {
+            for (int j = 0; j < size.z; j++) {
+                cells[i, j].RemoveSignPost();
+            }
+        }
+    }
+
+    //gets the list of MazeCells on the path from the player to the exit cell
+    public List<IntVector2> GetPathToExit(IntVector2 playerCoords) {
+        //get shortest paths to all nodes from exit
+        GraphNode exitNode = MazeGrid.grid[exitCoords.x, exitCoords.z];
+        Dictionary<GraphNode, Path> pathsFromExit = MazeGrid.GetShortestPathsForTree(exitNode);
+
+        //get shortest path to player's coordinates
+        GraphNode playerNode = MazeGrid.grid[playerCoords.x, playerCoords.z];
+        Path pathToPlayer = pathsFromExit[playerNode];
+
+        //reverse list to get path to exit instead
+        pathToPlayer.nodeList.Reverse();
+
+        //get maze cells corresponding to graph nodes and return it
+        List<IntVector2> cellPath = new List<IntVector2>(
+            pathToPlayer.nodeList.Select(n => MazeGrid.GetNodeCoords(n))
+            );
+        return cellPath;
     }
 }

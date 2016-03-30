@@ -36,6 +36,21 @@ public static class MazeDirections {
         return rotations[(int)direction];
     }
 
+    public static MazeDirection ToDirection(this IntVector2 vector) {
+        if (vector.z >= 1) {
+            return MazeDirection.North;
+        }
+        else if (vector.z <= -1) {
+            return MazeDirection.South;
+        }
+        else if (vector.x >= 1) {
+            return MazeDirection.East;
+        }
+        else {
+            return MazeDirection.West;
+        }
+    }
+
     public static MazeDirection RandDirection {
         get {
             return (MazeDirection)Random.Range(0, DirectionCount);

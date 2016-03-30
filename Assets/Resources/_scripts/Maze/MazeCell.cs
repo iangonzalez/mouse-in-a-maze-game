@@ -10,6 +10,12 @@ public class MazeCell : MonoBehaviour {
 
     private MazeCellEdge[] edges = new MazeCellEdge[MazeDirections.DirectionCount];
 
+    private DirectionalSignPost signpostInstance;
+
+    void Start() {
+        signpostInstance = null;
+    }
+
     public bool IsFullyInitialized {
         get {
             return initedEdgeCount >= MazeDirections.DirectionCount;
@@ -44,7 +50,9 @@ public class MazeCell : MonoBehaviour {
 
     public void TurnLightRed() {
         Light light = GetComponentInChildren<Light>();
-        light.color = Color.red;
+        if (light != null) {
+            light.color = Color.red;
+        }
     }
 
     public void MakeThisExitCell() {
@@ -56,9 +64,35 @@ public class MazeCell : MonoBehaviour {
         Destroy(cellLamp);
     }
 
-    public void AddSignPost(MazeDirection dir) {
-        DirectionalSignPost signpost = Instantiate(signpostPrefab) as DirectionalSignPost;
-        signpost.transform.parent = transform;
-        signpost.transform.localPosition = new Vector3(0, 0.5f, 0);
+    //initialize a directional signpost pointing in direction dir and in a quadrant of the cell not
+    //containing the player located at playerPosition.
+    public void AddSignPost(MazeDirection dir, Vector3 playerPosition) {
+
+        if (signpostInstance != null) {
+            return;
+        }
+
+        signpostInstance = Instantiate(signpostPrefab) as DirectionalSignPost;
+        signpostInstance.transform.parent = transform;
+
+        Vector3 relativePos = playerPosition - transform.localPosition;
+
+        signpostInstance.transform.localPosition = new Vector3(
+            (relativePos.x <= 0 ? 0.25f : -0.25f), 
+            -1.5f,
+            (relativePos.z <= 0 ? 0.25f : -0.25f)
+        );
+
+        signpostInstance.transform.localRotation *= dir.ToRotation();
+    }
+
+    public void RemoveSignPost() {
+        if (signpostInstance == null) {
+            return;
+        }
+        else {
+            Destroy(signpostInstance.gameObject);
+            signpostInstance = null;
+        }
     }
 }
