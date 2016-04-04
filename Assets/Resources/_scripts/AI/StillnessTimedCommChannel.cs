@@ -1,15 +1,15 @@
 ﻿using UnityEngine;
 
-public abstract class TimedCommChannel : CommunicationChannel {
-    protected float timeToWait = 0f;
+public class StillnessTimedCommChannel : TimedCommChannel {
+    protected Vector3 initialPlayerPos;
 
-    //complete communcation on enter
     protected override void Update() {
         if (Input.GetKeyDown(KeyCode.Return) && ai != null && player != null) {
             if (lineIdx < messageLines.Length) {
                 DisplayNextLine();
             }
             else {
+                player.UnfreezePlayer(); //this line is changed from parent class
                 DestroyTextBoxes();
             }
         }
@@ -18,11 +18,7 @@ public abstract class TimedCommChannel : CommunicationChannel {
         if (timeToWait <= 0) {
             commComplete = true;
         }
-        
-    }
 
-    public void SetTimeToWait(float seconds) {
-        timeToWait = seconds;
     }
 
     public override void StartCommunicationWithPlayer(Player player, GameAI ai, string message) {
@@ -33,6 +29,8 @@ public abstract class TimedCommChannel : CommunicationChannel {
 
         InitializeChannelFields(player, ai);
 
+        player.FreezePlayer();
+
         //change this in derived class if you want text input.
         CreateTextBoxes(withPlayerWordBox: false, withContinuePrompt: true);
 
@@ -42,21 +40,19 @@ public abstract class TimedCommChannel : CommunicationChannel {
 
         SplitMessageIntoLines(message);
         DisplayNextLine();
+
+        //record initial position of the player
+        initialPlayerPos = player.transform.localPosition;
     }
 
-    public override bool IsResponseReceived() {
-        return commComplete;
-    }
-
-
-    public override void EndCommuncation() {
-        commComplete = false;
-        DestroyTextBoxes();
-        //player.UnfreezePlayer();
-
-        //reset these fields so channel is dead
-        player = null;
-        ai = null;
-        enabled = false;
+    public override PlayerResponse GetResponse() {
+        if (initialPlayerPos.x != player.transform.localPosition.x ||
+            initialPlayerPos.z != player.transform.localPosition.z) {
+            return new PlayerResponse(true);
+        }
+        else {
+            return new PlayerResponse(false);
+        }
     }
 }
+

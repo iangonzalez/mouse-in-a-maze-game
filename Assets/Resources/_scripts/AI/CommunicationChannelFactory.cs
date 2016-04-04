@@ -56,5 +56,18 @@ public static class CommunicationChannelFactory {
             return commObj.GetComponent<OneWayTimedCommChannel>();
         }
     }
+
+    public static CommunicationChannel MakeTimedStillnessChannel() {
+        var commObj = InstantiatePrefabAtPath("prefabs/StillnessTimedCommChannel");
+        if (commObj == null) {
+            Debug.Log("prefab instantiation in factory is null");
+            return null;
+        }
+        else {
+            return commObj.GetComponent<StillnessTimedCommChannel>();
+        }
+    }
+
+
 }
 

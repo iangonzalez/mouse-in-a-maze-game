@@ -112,6 +112,7 @@
     <Compile Include="Assets\Resources\_scripts\AI\PathCommuncationChannel.cs" />
     <Compile Include="Assets\Resources\_scripts\AI\PlayerPath.cs" />
     <Compile Include="Assets\Resources\_scripts\AI\RoomExitPathCommChannel.cs" />
+    <Compile Include="Assets\Resources\_scripts\AI\StillnessTimedCommChannel.cs" />
     <Compile Include="Assets\Resources\_scripts\AI\TimedCommChannel.cs" />
     <Compile Include="Assets\Resources\_scripts\GameManager.cs" />
     <Compile Include="Assets\Resources\_scripts\Maze\DirectionalSignPost.cs" />
@@ -129,6 +130,7 @@
     <Compile Include="Assets\Resources\_scripts\AI\PlayerResponse.cs" />
     <Compile Include="Assets\Resources\_scripts\AI\TextCommunicationChannel.cs" />
     <Compile Include="Assets\Resources\_scripts\Utils\GameLinesTextGetter.cs" />
+    <Compile Include="Assets\Resources\_scripts\Utils\ObjectMover.cs" />
     <Compile Include="Assets\Resources\_scripts\Utils\ThreeState.cs" />
   </ItemGroup>
   <ItemGroup>

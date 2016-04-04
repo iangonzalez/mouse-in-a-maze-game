@@ -27,6 +27,9 @@ public class GameAI : MonoBehaviour {
     private OneWayTextCommunication oneWayCommChannel;
     private RoomExitPathCommChannel roomExitCommChannel;
     private OneWayTimedCommChannel oneWayTimedComm;
+    private StillnessTimedCommChannel stillnessTimedComm;
+
+    private ObjectMover objectMover;
 
     private string receivedPlayerMessage;
     private IntVector2 playerCurrentCoords;
@@ -48,6 +51,8 @@ public class GameAI : MonoBehaviour {
 
     private int numberOfInfractions = 0;
 
+    private bool reactToPlayer = false;
+
     private void Start() {
 
         //init communcation channels 
@@ -55,6 +60,10 @@ public class GameAI : MonoBehaviour {
         oneWayCommChannel = CommunicationChannelFactory.MakeOneWayTextChannel() as OneWayTextCommunication;
         roomExitCommChannel = CommunicationChannelFactory.MakeRoomExitPathChannel() as RoomExitPathCommChannel;
         oneWayTimedComm = CommunicationChannelFactory.MakeOneWayTimedChannel() as OneWayTimedCommChannel;
+        stillnessTimedComm = CommunicationChannelFactory.MakeTimedStillnessChannel() as StillnessTimedCommChannel;
+
+        //init object mover
+        objectMover = ObjectMover.CreateObjectMover();
 
         playerCurrentCoords = player.MazeCellCoords;
 
@@ -148,12 +157,15 @@ public class GameAI : MonoBehaviour {
             }
         }
         else if (!openingDone) {
-            maze.CloseDoorsInCell(playerCurrentCoords);
-            SendMessageToPlayer(GameLinesTextGetter.OpeningMonologue(), oneWayCommChannel);
+            //maze.CloseDoorsInCell(playerCurrentCoords);
+            Hostile_Request_LockPlayerInRoom();
+            //Hostile_Reaction_SpinTheMaze();
+            //Neutral_Request_AskPlayerToStandStill();
+            //SendMessageToPlayer(GameLinesTextGetter.OpeningMonologue(), oneWayCommChannel);
             openingDone = true;
         }
         else if (playerCurrentCoords != player.MazeCellCoords && 
-                 DistanceBetweenPlayerAndRoom(playerCurrentCoords) < 0.3) {
+                 DistanceBetweenPlayerAndRoom(player.MazeCellCoords) < 0.3) {
 
             playerCurrentCoords = player.MazeCellCoords;
             if (!firstInterchangeDone) {
@@ -161,7 +173,13 @@ public class GameAI : MonoBehaviour {
                 firstInterchangeDone = true;
             }
             else {
-                ExecuteRandomAction(perStateRequestActionList[aiAlignmentState]);
+                if (reactToPlayer) {
+                    ExecuteRandomAction(perStateReactionList[aiAlignmentState]);
+                    reactToPlayer = false;
+                }
+                else {
+                    ExecuteRandomAction(perStateRequestActionList[aiAlignmentState]);
+                }
             }
         }
     }
@@ -173,21 +191,25 @@ public class GameAI : MonoBehaviour {
     private void HandleResponse(PlayerResponse response) {
         maze.OpenDoorsInCell(playerCurrentCoords);
 
-        //do nothing if there was no text response expected
-        if (currentCommChannel.GetType() == typeof(OneWayTextCommunication)) {
-            if (aiCommState == AICommunicationState.NotInCommuncation) {
-                ExecuteRandomAction(perStateReactionList[aiAlignmentState]);
-            }
+        //if there was no interchange, no response was expected, so do nothing
+        if (currentInterchange == null) {
             return;
         }
+        //otherwise, check response, change state, and respond as needed
+        else {
+            ThreeState wasResponseCorrect = currentInterchange.CheckIfCorrectResponse(response);
+            string responseText = currentInterchange.GetResponseToPlayerText(wasResponseCorrect.ToBool());
+            SendMessageToPlayer(responseText, oneWayCommChannel);
 
-        ThreeState wasResponseCorrect = currentInterchange.CheckIfCorrectResponse(response);
-        string responseText = currentInterchange.GetResponseToPlayerText(wasResponseCorrect.ToBool());
-        SendMessageToPlayer(responseText, oneWayCommChannel);
+            if (wasResponseCorrect != ThreeState.Neutral) {
+                StateTransition(wasResponseCorrect.ToBool());
+            }
+            //reset current interchange to get caught by above conditional.
+            currentInterchange = null;
 
-        if (wasResponseCorrect != ThreeState.Neutral) {
-            StateTransition(wasResponseCorrect.ToBool());
-        }        
+            //on occasion, prompt a reaction from the AI on the next room
+            reactToPlayer = (UnityEngine.Random.Range(0, 1f) < 0.75f);
+        }
     }
 
     private void StateTransition(bool responseWasPositive) {
@@ -269,11 +291,17 @@ public class GameAI : MonoBehaviour {
         SendMessageToPlayer(currentInterchange.GetQuestionText(), textCommChannel);
     }
 
-    //private void Neutral_Reaction_SayANeutralPhrase() {
-    //    //TODO: Add code for the AI to say some banal thing.
-    //}
+    private void Neutral_Request_AskPlayerToStandStill() {
+        maze.CloseDoorsInCell(playerCurrentCoords);
+        currentInterchange = new StayStillInterchange(aiAlignmentState);
+        SendMessageToPlayer(currentInterchange.GetQuestionText(), stillnessTimedComm);
+    }
 
-    
+    private void Neutral_Reaction_SayANeutralPhrase() {
+        //TODO: Add code for the AI to say some banal things.
+    }
+
+
     #endregion
 
     //Hostile AI actions
@@ -298,9 +326,41 @@ public class GameAI : MonoBehaviour {
         SendMessageToPlayer(currentInterchange.GetQuestionText(), oneWayTimedComm);
     }
 
+    private void Hostile_Request_NastyLimerickCompletion() {
+
+    }
+
     private void Hostile_Reaction_TurnLightsRed() {
         maze.RemoveAllSignPosts();
         maze.TurnAllLightsRed();
+    }
+
+    private void Hostile_Reaction_SpinTheMaze() {
+        oneWayTimedComm.SetTimeToWait(5.0f);
+        SendMessageToPlayer(GameLinesTextGetter.SpinMazeText, oneWayTimedComm);
+
+        Action<GameObject> onFinish = (obj => obj.GetComponent<Player>().UnfreezePlayer());
+
+        player.FreezePlayer();
+        objectMover.SpinObject(player.gameObject, 4750f, 300.0f, onFinish);
+    }
+
+    private void Hostile_Reaction_LengthenHallways() {
+
+    }
+
+    private void Hostile_Reaction_LengthenPathToExit() {
+
+    }
+
+    private void Hostile_Reaction_TheBeastIsNear() {
+
+    }
+
+    private void Hostile_Reaction_GiveFalseHint() {
+        SendMessageToPlayer(GameLinesTextGetter.FalseHintText, oneWayCommChannel);
+
+        maze.AddSignpostToCell(playerCurrentCoords, MazeDirections.RandDirection, player.transform.localPosition);
     }
 
     #endregion
@@ -316,12 +376,28 @@ public class GameAI : MonoBehaviour {
         Neutral_Request_MakeTextRequestToPlayer();
     }
 
-    private void Neutral_Reaction_GiveHint() {
+    private void Friendly_Reaction_GiveHint() {
         List<IntVector2> pathToExit = maze.GetPathToExit(playerCurrentCoords);
 
         SendMessageToPlayer("Have a hint. You've earned it.", oneWayCommChannel);
         MazeDirection wayToMove = (pathToExit[1] - playerCurrentCoords).ToDirection();
         maze.AddSignpostToCell(playerCurrentCoords, wayToMove, player.transform.localPosition);
+    }
+
+    private void Friendly_Reaction_AddGridLocationsToWalls() {
+
+    }
+
+    private void Friendly_Request_KillAChild() {
+
+    }
+
+    private void Friendly_Request_FeedTheBeast() {
+
+    }
+
+    private void Friendly_Reaction_CreateShortcut() {
+
     }
     
     #endregion

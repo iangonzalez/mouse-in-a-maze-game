@@ -124,3 +124,19 @@ public class LockPlayerInRoomInterchange : AiPlayerInterchange {
         return "Thanks for waiting! And no, I won't tell you why I did that.";
     }
 }
+
+public class StayStillInterchange : AiPlayerInterchange {
+    public StayStillInterchange(AIAlignmentState state) : base(state) { }
+
+    public override ThreeState CheckIfCorrectResponse(PlayerResponse response) {
+        return (!response.playerMoved).ToThreeState();
+    }
+
+    public override string GetQuestionText() {
+        return "Please remain still for 10 seconds.";
+    }
+
+    public override string GetResponseToPlayerText(bool responseIsPositive) {
+        return GameLinesTextGetter.RandomResponse(isPositive: responseIsPositive);     
+    }
+}
