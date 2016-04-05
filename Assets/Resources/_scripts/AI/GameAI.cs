@@ -158,7 +158,7 @@ public class GameAI : MonoBehaviour {
         }
         else if (!openingDone) {
             //maze.CloseDoorsInCell(playerCurrentCoords);
-            Hostile_Request_LockPlayerInRoom();
+            Hostile_Reaction_TheBeastIsNear();
             //Hostile_Reaction_SpinTheMaze();
             //Neutral_Request_AskPlayerToStandStill();
             //SendMessageToPlayer(GameLinesTextGetter.OpeningMonologue(), oneWayCommChannel);
@@ -342,7 +342,11 @@ public class GameAI : MonoBehaviour {
         Action<GameObject> onFinish = (obj => obj.GetComponent<Player>().UnfreezePlayer());
 
         player.FreezePlayer();
-        objectMover.SpinObject(player.gameObject, 4750f, 300.0f, onFinish);
+        bool success = objectMover.SpinObject(player.gameObject, 4750f, 300.0f, onFinish);
+
+        if (!success) {
+            Debug.LogError("ObjectMover failed to spin the Player, it was already busy.");
+        }
     }
 
     private void Hostile_Reaction_LengthenHallways() {
@@ -354,7 +358,16 @@ public class GameAI : MonoBehaviour {
     }
 
     private void Hostile_Reaction_TheBeastIsNear() {
+        maze.CloseDoorsInCell(playerCurrentCoords);
 
+        //if (oneWayTimedComm == null) {
+        //    Debug.LogError("timed comm was null");
+        //}
+
+        //oneWayTimedComm.SetTimeToWait(5.0f);
+        SendMessageToPlayer(GameLinesTextGetter.BeastIsNearText, oneWayCommChannel);
+
+        objectMover.ShakeObject(player.gameObject, new Vector3(1f, 0, 0), 30, 100.0f, 15f);
     }
 
     private void Hostile_Reaction_GiveFalseHint() {

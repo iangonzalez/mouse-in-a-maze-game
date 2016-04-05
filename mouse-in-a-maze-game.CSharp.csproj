@@ -67,19 +67,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Resources\_scripts\AI\AiPlayerInterchange.cs" />
-    <Compile Include="Assets\Resources\_scripts\AI\CommunicationChannel.cs" />
+    <Compile Include="Assets\Resources\_scripts\AI\AiPlayerInterchanges\AiPlayerInterchange.cs" />
     <Compile Include="Assets\Resources\_scripts\AI\CommunicationChannelFactory.cs" />
+    <Compile Include="Assets\Resources\_scripts\AI\CommunicationChannels\CommunicationChannel.cs" />
+    <Compile Include="Assets\Resources\_scripts\AI\CommunicationChannels\OneWayTextCommunication.cs" />
+    <Compile Include="Assets\Resources\_scripts\AI\CommunicationChannels\OneWayTimedCommChannel.cs" />
+    <Compile Include="Assets\Resources\_scripts\AI\CommunicationChannels\PathCommuncationChannel.cs" />
+    <Compile Include="Assets\Resources\_scripts\AI\CommunicationChannels\RoomExitPathCommChannel.cs" />
+    <Compile Include="Assets\Resources\_scripts\AI\CommunicationChannels\StillnessTimedCommChannel.cs" />
+    <Compile Include="Assets\Resources\_scripts\AI\CommunicationChannels\TextCommunicationChannel.cs" />
+    <Compile Include="Assets\Resources\_scripts\AI\CommunicationChannels\TimedCommChannel.cs" />
     <Compile Include="Assets\Resources\_scripts\AI\GameAI.cs" />
-    <Compile Include="Assets\Resources\_scripts\AI\OneWayTextCommunication.cs" />
-    <Compile Include="Assets\Resources\_scripts\AI\OneWayTimedCommChannel.cs" />
-    <Compile Include="Assets\Resources\_scripts\AI\PathCommuncationChannel.cs" />
-    <Compile Include="Assets\Resources\_scripts\AI\PlayerPath.cs" />
-    <Compile Include="Assets\Resources\_scripts\AI\PlayerResponse.cs" />
-    <Compile Include="Assets\Resources\_scripts\AI\RoomExitPathCommChannel.cs" />
-    <Compile Include="Assets\Resources\_scripts\AI\StillnessTimedCommChannel.cs" />
-    <Compile Include="Assets\Resources\_scripts\AI\TextCommunicationChannel.cs" />
-    <Compile Include="Assets\Resources\_scripts\AI\TimedCommChannel.cs" />
+    <Compile Include="Assets\Resources\_scripts\AI\PlayerResponses\PlayerPath.cs" />
+    <Compile Include="Assets\Resources\_scripts\AI\PlayerResponses\PlayerResponse.cs" />
     <Compile Include="Assets\Resources\_scripts\GameManager.cs" />
     <Compile Include="Assets\Resources\_scripts\Maze\DirectionalSignPost.cs" />
     <Compile Include="Assets\Resources\_scripts\Maze\Maze.cs" />

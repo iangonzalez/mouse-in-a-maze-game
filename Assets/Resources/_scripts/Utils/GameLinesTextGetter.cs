@@ -47,5 +47,6 @@ public static class GameLinesTextGetter {
 
     public static string FalseHintText = "Have a signpost. It might point in the right direction.\nIt might not.";
     public static string SpinMazeText = "Let's play a fun game! It's called 'I spin the maze, you get lost.'";
+    public static string BeastIsNearText = "When I get angry, strange things start to happen.\nBeasts appear where before there were none.";
 }
 
