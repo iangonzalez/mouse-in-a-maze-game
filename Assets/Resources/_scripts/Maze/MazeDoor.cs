@@ -29,5 +29,15 @@ public class MazeDoor : MazeCellEdge {
             open = true;
         }
     }
+
+    public void CloseDoorInstantly() {
+        open = false;
+        door.transform.localPosition += new Vector3(0, 0.25f - door.transform.localPosition.y, 0);
+    }
+
+    public void OpenDoorInstantly() {
+        open = true;
+        door.transform.localPosition += new Vector3(0, -0.35f - door.transform.localPosition.y, 0);
+    }
 }
 

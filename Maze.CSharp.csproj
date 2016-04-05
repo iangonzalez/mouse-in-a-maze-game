@@ -106,7 +106,7 @@
   <ItemGroup>
     <Compile Include="Assets\Resources\_scripts\AI\AiPlayerInterchanges\AiPlayerInterchange.cs" />
     <Compile Include="Assets\Resources\_scripts\AI\CommunicationChannels\CommunicationChannel.cs" />
-    <Compile Include="Assets\Resources\_scripts\AI\CommunicationChannels\CommunicationChannelFactory.cs" />
+    <Compile Include="Assets\Resources\_scripts\AI\CommunicationChannelFactory.cs" />
     <Compile Include="Assets\Resources\_scripts\AI\GameAI.cs" />
     <Compile Include="Assets\Resources\_scripts\AI\CommunicationChannels\OneWayTimedCommChannel.cs" />
     <Compile Include="Assets\Resources\_scripts\AI\CommunicationChannels\PathCommuncationChannel.cs" />

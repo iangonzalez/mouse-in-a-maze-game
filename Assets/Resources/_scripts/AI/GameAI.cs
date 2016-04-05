@@ -189,7 +189,6 @@ public class GameAI : MonoBehaviour {
     /// </summary>
     /// <param name="response"></param>
     private void HandleResponse(PlayerResponse response) {
-        maze.OpenDoorsInCell(playerCurrentCoords);
 
         //if there was no interchange, no response was expected, so do nothing
         if (currentInterchange == null) {
@@ -197,6 +196,9 @@ public class GameAI : MonoBehaviour {
         }
         //otherwise, check response, change state, and respond as needed
         else {
+            //reopen doors if they were closed
+            maze.OpenDoorsInCell(playerCurrentCoords);
+
             ThreeState wasResponseCorrect = currentInterchange.CheckIfCorrectResponse(response);
             string responseText = currentInterchange.GetResponseToPlayerText(wasResponseCorrect.ToBool());
             SendMessageToPlayer(responseText, oneWayCommChannel);
@@ -358,16 +360,17 @@ public class GameAI : MonoBehaviour {
     }
 
     private void Hostile_Reaction_TheBeastIsNear() {
-        maze.CloseDoorsInCell(playerCurrentCoords);
+        maze.CloseDoorsInCell(playerCurrentCoords, doItInstantly: true);
 
-        //if (oneWayTimedComm == null) {
-        //    Debug.LogError("timed comm was null");
-        //}
-
-        //oneWayTimedComm.SetTimeToWait(5.0f);
         SendMessageToPlayer(GameLinesTextGetter.BeastIsNearText, oneWayCommChannel);
 
-        objectMover.ShakeObject(player.gameObject, new Vector3(1f, 0, 0), 30, 100.0f, 15f);
+        Action<GameObject> onFinish =
+            (obj) => {
+                    obj.transform.localRotation = Quaternion.LookRotation(obj.transform.forward);
+                    obj.GetComponentInParent<Maze>().OpenDoorsInCell(playerCurrentCoords);
+                };
+
+        objectMover.ShakeObject(maze.GetCell(playerCurrentCoords).gameObject, new Vector3(0, 0, 1f), 30, 200f, 10f, onFinish);
     }
 
     private void Hostile_Reaction_GiveFalseHint() {

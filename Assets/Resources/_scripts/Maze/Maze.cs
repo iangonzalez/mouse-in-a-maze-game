@@ -215,21 +215,31 @@ public class Maze : MonoBehaviour {
         cells[exitCoords.x, exitCoords.z].MakeThisExitCell();
     }
 
-    public void CloseDoorsInCell(IntVector2 cellCoords) {
+    public void CloseDoorsInCell(IntVector2 cellCoords, bool doItInstantly = false) {
         MazeCell cellToClose = cells[cellCoords.x, cellCoords.z];
         MazeDoor[] doorsToClose = cellToClose.GetComponentsInChildren<MazeDoor>();
 
         foreach (var door in doorsToClose) {
-            door.CloseDoor();
+            if (doItInstantly) {
+                door.CloseDoorInstantly();
+            }
+            else {
+                door.CloseDoor();
+            }
         }
     }
 
-    public void OpenDoorsInCell(IntVector2 cellCoords) {
+    public void OpenDoorsInCell(IntVector2 cellCoords, bool doItInstantly = false) {
         MazeCell cellToClose = cells[cellCoords.x, cellCoords.z];
         MazeDoor[] doorsToClose = cellToClose.GetComponentsInChildren<MazeDoor>();
 
         foreach (var door in doorsToClose) {
-            door.OpenDoor();
+            if (doItInstantly) {
+                door.OpenDoorInstantly();
+            }
+            else {
+                door.OpenDoor();
+            }
         }
     }
 

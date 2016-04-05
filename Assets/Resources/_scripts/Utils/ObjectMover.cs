@@ -85,7 +85,7 @@ public class ObjectMover : MonoBehaviour {
                     ResetFields();
                 }
                 else {
-                    degreesToSpin = perShakeDegrees;
+                    degreesToSpin = 2*perShakeDegrees;
                 }
             }
         }
