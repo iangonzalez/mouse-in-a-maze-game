@@ -48,5 +48,16 @@ public static class GameLinesTextGetter {
     public static string FalseHintText = "Have a signpost. It might point in the right direction.\nIt might not.";
     public static string SpinMazeText = "Let's play a fun game! It's called 'I spin the maze, you get lost.'";
     public static string BeastIsNearText = "When I get angry, strange things start to happen.\nBeasts appear where before there were none.";
+
+    public static string ShortcutText(bool shortcutPossible) {
+        if (shortcutPossible) {
+            return "You've been such a good test subject so far.\nHere, this new passage is a shortcut to the exit.";
+        }
+        else {
+            return "You've been such a good test subject so far.\nI tried to find a shortcut from this room, but you're already on the right track, my friend.";
+        }
+        
+    }
+    
 }
 

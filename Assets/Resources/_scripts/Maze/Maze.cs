@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using GraphClasses;
@@ -25,7 +26,7 @@ public class Maze : MonoBehaviour {
     public float MazeScale;
 
     //hold hallways
-    private List<MazeHallway> hallways = new List<MazeHallway>();
+    private Dictionary<GraphEdge, MazeHallway> hallways = new Dictionary<GraphEdge, MazeHallway>();
 
     //hold the graph and the cells for the maze
     private MazeCell[,] cells;
@@ -59,6 +60,7 @@ public class Maze : MonoBehaviour {
 
         //turn the grid graph into a spanning tree of the same nodes
         MazeGrid.RandomizedKruskals();
+
 
         //a cell will exist at each node
         for (int i = 0; i < MazeGrid.x; i++) {
@@ -99,6 +101,9 @@ public class Maze : MonoBehaviour {
 
         //make the maze bigger or smaller as desired
         transform.localScale = new Vector3(MazeScale, MazeScale, MazeScale);
+
+        Debug.Log("Cell wall scale lossy: ");
+        Debug.Log(cells[0, 0].GetEdge(MazeDirection.North).gameObject.transform.lossyScale);
     }
 
     /// <summary>
@@ -129,7 +134,16 @@ public class Maze : MonoBehaviour {
         }
 
         //add the hallway to the list
-        hallways.Add(newHallway);
+        hallways[edge] = newHallway;
+    }
+
+    private void DestroyHallway(GraphEdge edge) {
+        Destroy(hallways[edge].gameObject);
+    }
+
+    private void DestroyMazeCellEdge(MazeCell cell, MazeDirection dir) {
+        MazeCellEdge edge = cell.GetEdge(dir);
+        Destroy(edge.gameObject);
     }
 
     private void CreatePassage(MazeCell cell, MazeCell otherCell, MazeDirection direction) {
@@ -172,7 +186,7 @@ public class Maze : MonoBehaviour {
         player.transform.parent = transform;
         
         var leafNodes = MazeGrid.nodeList.Where(n => n.neighbors.Count == 1);
-        var randStartNode = leafNodes.ElementAt(Random.Range(0, leafNodes.Count()));
+        var randStartNode = leafNodes.ElementAt(UnityEngine.Random.Range(0, leafNodes.Count()));
         IntVector2 coords = MazeGrid.GetNodeCoords(randStartNode);
 
         player.InitializePlayerCoords(coords);
@@ -249,7 +263,7 @@ public class Maze : MonoBehaviour {
                 cells[i, j].TurnLightRed();
             }
         }
-        foreach (MazeHallway hallway in hallways) {
+        foreach (MazeHallway hallway in hallways.Values) {
             hallway.TurnLightsRed();
         }
     }
@@ -284,5 +298,100 @@ public class Maze : MonoBehaviour {
             pathToPlayer.nodeList.Select(n => MazeGrid.GetNodeCoords(n))
             );
         return cellPath;
+    }
+
+    private MazeDirection? FindUnconnectedGridNeighborWithShortestPathToExit(IntVector2 coords, 
+        List<IntVector2> pathToExit) {
+        MazeDirection? retval = null;
+
+        GraphNode n1 = MazeGrid.grid[coords.x, coords.z];
+        foreach (MazeDirection dir in Enum.GetValues(typeof(MazeDirection))) {
+            IntVector2 newCoords = coords + dir.ToIntVector2();
+            if (ValidCoordinate(newCoords)) {
+                GraphNode n2 = MazeGrid.grid[newCoords.x, newCoords.z];
+
+                if (MazeGrid.GetEdge(n1, n2) == null) {
+                    List<IntVector2> pathToExitNeighbor = (GetPathToExit(newCoords));
+                    if (pathToExitNeighbor.Count < pathToExit.Count) {
+                        retval = dir;
+                    }
+                }
+            }
+        }
+
+        return retval;
+    }
+
+    private void DestroyHallwayAndWallItsDoors(IntVector2 cell1Coords, IntVector2 cell2Coords) {
+        if (!ValidCoordinate(cell1Coords) || !ValidCoordinate(cell2Coords)) {
+            Debug.LogError("trying to destroy hallway between nonexistent nodes.");
+            return;
+        }
+
+        MazeDirection removeDir = (cell2Coords - cell1Coords).ToDirection();
+        GraphNode n1 = MazeGrid.grid[cell1Coords.x, cell1Coords.z];
+        GraphNode oldNeighbor = MazeGrid.grid[cell2Coords.x, cell2Coords.z];
+
+        //destroy the old hallway.
+        DestroyHallway(MazeGrid.GetEdge(n1, oldNeighbor));
+        MazeGrid.RemoveEdge(n1, oldNeighbor);
+
+        //destroy that hallway's doors and replace with walls:
+        DestroyMazeCellEdge(GetCell(cell1Coords), removeDir);
+        DestroyMazeCellEdge(GetCell(cell2Coords), removeDir.GetOpposite());
+
+        CreateWall(GetCell(cell1Coords), GetCell(cell2Coords), removeDir);
+        CreateWall(GetCell(cell2Coords), GetCell(cell1Coords), removeDir.GetOpposite());
+    }
+
+    private void ReplaceWallsWithNewHallwayAndDoors(IntVector2 cell1Coords, IntVector2 cell2Coords) {
+        if (!ValidCoordinate(cell1Coords) || !ValidCoordinate(cell2Coords)) {
+            Debug.LogError("trying to destroy hallway between nonexistent nodes.");
+            return;
+        }
+
+        MazeDirection bestDir = (cell2Coords - cell1Coords).ToDirection();
+        GraphNode n1 = MazeGrid.grid[cell1Coords.x, cell1Coords.z];
+        GraphNode newNeighbor = MazeGrid.grid[cell2Coords.x, cell2Coords.z];
+
+        //destroy the old walls where the new edge is being added and add doors:
+        DestroyMazeCellEdge(GetCell(cell1Coords), bestDir);
+        DestroyMazeCellEdge(GetCell(cell2Coords), bestDir.GetOpposite());
+
+        CreatePassage(GetCell(cell1Coords), GetCell(cell2Coords), bestDir);
+        CreatePassage(GetCell(cell2Coords), GetCell(cell1Coords), bestDir.GetOpposite());
+
+        //create the new hallway:
+        MazeGrid.CreateEdge(n1, newNeighbor);
+        CreateHallway(MazeGrid.GetEdge(n1, newNeighbor));
+
+        //Renderer rend = GetComponent<Renderer>();
+        //rend.material.shader = Shader.Find("Specular");
+        //rend.material.SetColor("_SpecColor", Color.red);
+        //hallways[MazeGrid.GetEdge(n1, newNeighbor)].gameObject.;
+    }
+
+    public MazeDirection? CreateShortcutIfPossible(IntVector2 playerCoords) {
+        List<IntVector2> pathToExit = GetPathToExit(playerCoords);
+
+        if (pathToExit.Count < 2) {
+            Debug.LogError("trying to make shortcut from exit.");
+            return null; //this should only happen if the player is at the exit
+        }
+
+        MazeDirection? bestDirMaybe = FindUnconnectedGridNeighborWithShortestPathToExit(playerCoords, pathToExit);
+        if (bestDirMaybe == null) {
+            return null;
+        }
+
+        MazeDirection bestDir = bestDirMaybe.GetValueOrDefault();
+
+        IntVector2 bestNeighborChoice = playerCoords + bestDir.ToIntVector2();
+        IntVector2 neighborToRemove = pathToExit[1];
+
+        DestroyHallwayAndWallItsDoors(playerCoords, neighborToRemove);
+        ReplaceWallsWithNewHallwayAndDoors(playerCoords, bestNeighborChoice);
+
+        return bestDirMaybe;
     }
 }

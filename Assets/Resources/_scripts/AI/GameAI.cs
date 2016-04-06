@@ -158,7 +158,8 @@ public class GameAI : MonoBehaviour {
         }
         else if (!openingDone) {
             //maze.CloseDoorsInCell(playerCurrentCoords);
-            Hostile_Reaction_TheBeastIsNear();
+            Friendly_Reaction_CreateShortcut();
+            //Hostile_Reaction_TheBeastIsNear();
             //Hostile_Reaction_SpinTheMaze();
             //Neutral_Request_AskPlayerToStandStill();
             //SendMessageToPlayer(GameLinesTextGetter.OpeningMonologue(), oneWayCommChannel);
@@ -364,13 +365,15 @@ public class GameAI : MonoBehaviour {
 
         SendMessageToPlayer(GameLinesTextGetter.BeastIsNearText, oneWayCommChannel);
 
+        //realign the object to normal rotation after shaking is done
         Action<GameObject> onFinish =
             (obj) => {
                     obj.transform.localRotation = Quaternion.LookRotation(obj.transform.forward);
                     obj.GetComponentInParent<Maze>().OpenDoorsInCell(playerCurrentCoords);
                 };
 
-        objectMover.ShakeObject(maze.GetCell(playerCurrentCoords).gameObject, new Vector3(0, 0, 1f), 30, 200f, 10f, onFinish);
+        objectMover.ShakeObject(maze.GetCell(playerCurrentCoords).gameObject, 
+                                new Vector3(0, 0, 1f), 30, 200f, 10f, onFinish);
     }
 
     private void Hostile_Reaction_GiveFalseHint() {
@@ -413,7 +416,15 @@ public class GameAI : MonoBehaviour {
     }
 
     private void Friendly_Reaction_CreateShortcut() {
+        MazeDirection? shortcutDir = maze.CreateShortcutIfPossible(playerCurrentCoords);
+        bool shortcutPossible = shortcutDir != null;
 
+        oneWayTimedComm.SetTimeToWait(5.0f);
+        SendMessageToPlayer(GameLinesTextGetter.ShortcutText(shortcutPossible), oneWayTimedComm);
+
+        if (shortcutPossible) {
+            maze.AddSignpostToCell(playerCurrentCoords, shortcutDir.GetValueOrDefault(), player.transform.localPosition);
+        }
     }
     
     #endregion
