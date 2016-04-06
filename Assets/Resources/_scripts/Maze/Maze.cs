@@ -101,9 +101,6 @@ public class Maze : MonoBehaviour {
 
         //make the maze bigger or smaller as desired
         transform.localScale = new Vector3(MazeScale, MazeScale, MazeScale);
-
-        Debug.Log("Cell wall scale lossy: ");
-        Debug.Log(cells[0, 0].GetEdge(MazeDirection.North).gameObject.transform.lossyScale);
     }
 
     /// <summary>
@@ -300,8 +297,8 @@ public class Maze : MonoBehaviour {
         return cellPath;
     }
 
-    private MazeDirection? FindUnconnectedGridNeighborWithShortestPathToExit(IntVector2 coords, 
-        List<IntVector2> pathToExit) {
+    private MazeDirection? UnconnectedNeighborWithShortestOrLongestPathToExit(IntVector2 coords, 
+        List<IntVector2> pathToExit, bool findShortest = true) {
         MazeDirection? retval = null;
 
         GraphNode n1 = MazeGrid.grid[coords.x, coords.z];
@@ -311,8 +308,12 @@ public class Maze : MonoBehaviour {
                 GraphNode n2 = MazeGrid.grid[newCoords.x, newCoords.z];
 
                 if (MazeGrid.GetEdge(n1, n2) == null) {
-                    List<IntVector2> pathToExitNeighbor = (GetPathToExit(newCoords));
-                    if (pathToExitNeighbor.Count < pathToExit.Count) {
+                    List<IntVector2> neighborPathToExit = GetPathToExit(newCoords);
+
+                    bool pathIsShorter = (neighborPathToExit.Count < pathToExit.Count);
+                    bool pathIsntEqual = (neighborPathToExit.Count != pathToExit.Count);
+
+                    if ((pathIsShorter == findShortest) && pathIsntEqual) {
                         retval = dir;
                     }
                 }
@@ -344,7 +345,8 @@ public class Maze : MonoBehaviour {
         CreateWall(GetCell(cell2Coords), GetCell(cell1Coords), removeDir.GetOpposite());
     }
 
-    private void ReplaceWallsWithNewHallwayAndDoors(IntVector2 cell1Coords, IntVector2 cell2Coords) {
+    private void ReplaceWallsWithNewHallwayAndDoors(IntVector2 cell1Coords, IntVector2 cell2Coords, 
+                                                    bool greenHallway = false, bool redHallway = false) {
         if (!ValidCoordinate(cell1Coords) || !ValidCoordinate(cell2Coords)) {
             Debug.LogError("trying to destroy hallway between nonexistent nodes.");
             return;
@@ -365,13 +367,20 @@ public class Maze : MonoBehaviour {
         MazeGrid.CreateEdge(n1, newNeighbor);
         CreateHallway(MazeGrid.GetEdge(n1, newNeighbor));
 
-        //Renderer rend = GetComponent<Renderer>();
-        //rend.material.shader = Shader.Find("Specular");
-        //rend.material.SetColor("_SpecColor", Color.red);
-        //hallways[MazeGrid.GetEdge(n1, newNeighbor)].gameObject.;
+        var newhallway = hallways[MazeGrid.GetEdge(n1, newNeighbor)];
+        var walls = newhallway.transform.FindChild("walls");
+
+        if (redHallway || greenHallway) {
+            Color hallColor = redHallway ? Color.red : Color.green;
+            foreach (Transform child in walls.transform) {
+                Renderer rend = child.gameObject.GetComponent<Renderer>();
+                rend.material.color = hallColor;
+            }
+        }
+        
     }
 
-    public MazeDirection? CreateShortcutIfPossible(IntVector2 playerCoords) {
+    public MazeDirection? CreateShortOrLongCut(IntVector2 playerCoords, bool isShortcut) {
         List<IntVector2> pathToExit = GetPathToExit(playerCoords);
 
         if (pathToExit.Count < 2) {
@@ -379,7 +388,8 @@ public class Maze : MonoBehaviour {
             return null; //this should only happen if the player is at the exit
         }
 
-        MazeDirection? bestDirMaybe = FindUnconnectedGridNeighborWithShortestPathToExit(playerCoords, pathToExit);
+        MazeDirection? bestDirMaybe = 
+            UnconnectedNeighborWithShortestOrLongestPathToExit(playerCoords, pathToExit, isShortcut);
         if (bestDirMaybe == null) {
             return null;
         }
@@ -390,8 +400,34 @@ public class Maze : MonoBehaviour {
         IntVector2 neighborToRemove = pathToExit[1];
 
         DestroyHallwayAndWallItsDoors(playerCoords, neighborToRemove);
-        ReplaceWallsWithNewHallwayAndDoors(playerCoords, bestNeighborChoice);
+        ReplaceWallsWithNewHallwayAndDoors(playerCoords, bestNeighborChoice, 
+                                           greenHallway: isShortcut, redHallway: !isShortcut);
 
         return bestDirMaybe;
+    }
+
+    public MazeDirection? CreateShortcutIfPossible(IntVector2 playerCoords) {
+        return CreateShortOrLongCut(playerCoords, isShortcut: true);
+    }
+
+    public MazeDirection? LengthenPathToExitIfPossible(IntVector2 playerCoords) {
+        return CreateShortOrLongCut(playerCoords, isShortcut: false);
+    }
+
+
+    private void AddCoordsToCell(IntVector2 coords) {
+        MazeCell cell = GetCell(coords);
+        var walls = cell.GetComponentsInChildren<MazeWall>();
+        foreach (var wall in walls) {
+            wall.AddCoordText(coords);
+        }
+    }
+
+    public void AddCoordsToAllCells() {
+        for (int i = 0; i < size.x; i++) {
+            for (int j = 0; j < size.z; j++) {
+                AddCoordsToCell(new IntVector2(i, j));
+            }
+        }
     }
 }

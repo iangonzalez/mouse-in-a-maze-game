@@ -56,7 +56,15 @@ public static class GameLinesTextGetter {
         else {
             return "You've been such a good test subject so far.\nI tried to find a shortcut from this room, but you're already on the right track, my friend.";
         }
-        
+    }
+
+    public static string LongcutText(bool longcutPossible) {
+        if (longcutPossible) {
+            return "You were getting too close.\nThis new passage will make your route take longer. Maybe you'll have time to think about what you've done.";
+        }
+        else {
+            return "I was going to lengthen your path to the exit.\nBut it looks like you're already pretty lost on your own. Ha!";
+        }
     }
     
 }

@@ -158,7 +158,9 @@ public class GameAI : MonoBehaviour {
         }
         else if (!openingDone) {
             //maze.CloseDoorsInCell(playerCurrentCoords);
-            Friendly_Reaction_CreateShortcut();
+            Friendly_Reaction_AddGridLocationsToWalls();
+            //Hostile_Reaction_LengthenPathToExit();
+            //Friendly_Reaction_CreateShortcut();
             //Hostile_Reaction_TheBeastIsNear();
             //Hostile_Reaction_SpinTheMaze();
             //Neutral_Request_AskPlayerToStandStill();
@@ -353,11 +355,19 @@ public class GameAI : MonoBehaviour {
     }
 
     private void Hostile_Reaction_LengthenHallways() {
-
+        
     }
 
     private void Hostile_Reaction_LengthenPathToExit() {
+        MazeDirection? longcutDir = maze.LengthenPathToExitIfPossible(playerCurrentCoords);
+        bool longcutPossible = longcutDir != null;
 
+        oneWayTimedComm.SetTimeToWait(5.0f);
+        SendMessageToPlayer(GameLinesTextGetter.LongcutText(longcutPossible), oneWayTimedComm);
+
+        if (longcutPossible) {
+            maze.AddSignpostToCell(playerCurrentCoords, longcutDir.GetValueOrDefault(), player.transform.localPosition);
+        }
     }
 
     private void Hostile_Reaction_TheBeastIsNear() {
@@ -404,7 +414,8 @@ public class GameAI : MonoBehaviour {
     }
 
     private void Friendly_Reaction_AddGridLocationsToWalls() {
-
+        SendMessageToPlayer("The coordinates of each cell may help you navigate, friend.", oneWayCommChannel);
+        maze.AddCoordsToAllCells();
     }
 
     private void Friendly_Request_KillAChild() {
