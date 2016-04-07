@@ -20,7 +20,7 @@ public class Maze : MonoBehaviour {
     public MazeHallway hallwayPrefab;
 
     //distance between rooms generated
-    public int RoomSeparationDistance;
+    public float RoomSeparationDistance;
 
     //scales the entire maze up or down
     public float MazeScale;
@@ -103,6 +103,22 @@ public class Maze : MonoBehaviour {
         transform.localScale = new Vector3(MazeScale, MazeScale, MazeScale);
     }
 
+    private Vector3 GetHallwayPosition(GraphEdge edge) {
+        IntVector2 cellCoord1 = MazeGrid.GetNodeCoords(edge.node1);
+        IntVector2 cellCoord2 = MazeGrid.GetNodeCoords(edge.node2);
+
+        Vector3 cellPosition1 = GetCellLocalPosition(cellCoord1.x, cellCoord1.z);
+        Vector3 cellPosition2 = GetCellLocalPosition(cellCoord2.x, cellCoord2.z);
+        Vector3 hallwayPosition = (cellPosition1 + cellPosition2) / 2.0f;
+        hallwayPosition.y += 0.3f;
+
+        return hallwayPosition;
+    }
+
+    private Vector3 GetHallwayScale() {
+        return new Vector3(RoomSeparationDistance - 0.95f, 0.6f, 0.41f);
+    }
+
     /// <summary>
     /// Creates a hallway on the given edge. Gets coordinates of the nodes in the edge,
     /// translates into world coordinates, and places the properly stretched hallway
@@ -114,21 +130,19 @@ public class Maze : MonoBehaviour {
 
         IntVector2 cellCoord1 = MazeGrid.GetNodeCoords(edge.node1);
         IntVector2 cellCoord2 = MazeGrid.GetNodeCoords(edge.node2);
-        
-        Vector3 cellPosition1 = GetCellLocalPosition(cellCoord1.x, cellCoord1.z);
-        Vector3 cellPosition2 = GetCellLocalPosition(cellCoord2.x, cellCoord2.z);
-        Vector3 hallwayPosition = (cellPosition1 + cellPosition2) / 2.0f;
 
-        hallwayPosition.y += 0.3f;
+        Vector3 hallwayPosition = GetHallwayPosition(edge);
 
         newHallway.transform.parent = transform;
         newHallway.transform.localPosition = hallwayPosition;
-        newHallway.StretchHallway(new Vector3(RoomSeparationDistance - 0.95f, 0.6f, 0.41f));
+        
 
         //decide which way the hallway should be rotated
         if (cellCoord1.z != cellCoord2.z) {
             newHallway.RotateHallway();
         }
+
+        newHallway.StretchHallway(GetHallwayScale());
 
         //add the hallway to the list
         hallways[edge] = newHallway;
@@ -427,6 +441,44 @@ public class Maze : MonoBehaviour {
         for (int i = 0; i < size.x; i++) {
             for (int j = 0; j < size.z; j++) {
                 AddCoordsToCell(new IntVector2(i, j));
+            }
+        }
+    }
+
+
+    //fields and functions to lengthen the hallways
+    private bool changeHallwayLength = false;
+    private float newRoomSepDist = 0f;
+    private Player player;
+    public void ChangeHallwayLength(float newRoomSeparationDist, Player player) {
+        changeHallwayLength = true;
+        newRoomSepDist = newRoomSeparationDist;
+        this.player = player;
+    }
+
+    void Update() {
+        if (changeHallwayLength && (newRoomSepDist > RoomSeparationDistance)) {
+            RoomSeparationDistance += 0.1f;
+
+            for (int i = 0; i < size.x; i++) {
+                for (int j = 0; j < size.z; j++) {
+                    cells[i, j].transform.localPosition = GetCellLocalPosition(i, j);
+                    if (player.MazeCellCoords == new IntVector2(i,j)) {
+                        player.transform.localPosition = GetCellLocalPosition(i, j) + new Vector3(0, 0.2f, 0);
+                    }
+                }
+            }
+
+
+            foreach (var e in hallways.Keys) {
+                hallways[e].transform.localPosition = GetHallwayPosition(e);
+                hallways[e].StretchHallway(GetHallwayScale());
+            }
+
+            if (newRoomSepDist <= RoomSeparationDistance) {
+                changeHallwayLength = false;
+                player = null;
+                newRoomSepDist = 0;
             }
         }
     }

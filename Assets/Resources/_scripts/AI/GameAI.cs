@@ -158,7 +158,8 @@ public class GameAI : MonoBehaviour {
         }
         else if (!openingDone) {
             //maze.CloseDoorsInCell(playerCurrentCoords);
-            Friendly_Reaction_AddGridLocationsToWalls();
+            Hostile_Reaction_LengthenHallways();
+            //Friendly_Reaction_AddGridLocationsToWalls();
             //Hostile_Reaction_LengthenPathToExit();
             //Friendly_Reaction_CreateShortcut();
             //Hostile_Reaction_TheBeastIsNear();
@@ -355,7 +356,7 @@ public class GameAI : MonoBehaviour {
     }
 
     private void Hostile_Reaction_LengthenHallways() {
-        
+        maze.ChangeHallwayLength(maze.RoomSeparationDistance + 3.0f, player);
     }
 
     private void Hostile_Reaction_LengthenPathToExit() {
