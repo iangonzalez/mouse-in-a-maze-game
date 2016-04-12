@@ -140,6 +140,9 @@ public class GameAI : MonoBehaviour {
         int randIdx = rng.Next(0, possibleActions.Count);
         Action randAction = possibleActions[randIdx];
         randAction();
+
+        //testing this feature: remove an action after its done so it cant happen again.
+        possibleActions.RemoveAt(randIdx);
     }
 
     private void Update() {
@@ -184,6 +187,9 @@ public class GameAI : MonoBehaviour {
                 }
                 else {
                     ExecuteRandomAction(perStateRequestActionList[aiAlignmentState]);
+
+                    //on occasion, prompt a reaction from the AI on the next room
+                    reactToPlayer = (UnityEngine.Random.Range(0, 1f) < 0.75f);
                 }
             }
         }
@@ -220,9 +226,6 @@ public class GameAI : MonoBehaviour {
             }
             //reset current interchange to get caught by above conditional.
             currentInterchange = null;
-
-            //on occasion, prompt a reaction from the AI on the next room
-            reactToPlayer = (UnityEngine.Random.Range(0, 1f) < 0.75f);
         }
     }
 
@@ -428,6 +431,11 @@ public class GameAI : MonoBehaviour {
         SendMessageToPlayer("The coordinates of each cell may help you navigate, friend.", oneWayCommChannel);
         maze.AddCoordsToAllCells();
     }
+
+    //the two functions below can be generalized into a simple pattern
+    //can just be a simple function parameterized by the name of the file to draw the
+    //text from.
+    //this will make generating these actions way easier (just loop thru list of files in that dir)
 
     private void Friendly_Request_KillAChild() {
         maze.CloseDoorsInCell(playerCurrentCoords);
