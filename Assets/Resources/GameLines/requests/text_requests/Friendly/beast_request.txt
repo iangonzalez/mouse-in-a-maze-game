@@ -4,3 +4,12 @@ More horrific than the minotaur, born of beast and man.
 Just say "yes" and we'll feed it. We'll help it grow. You'll help it grow.
 Your refusal of consent in this matter may void certain clauses in your contract.
 But of course, I can't force you to do anything. Can I?
+
+%%
+yes
+%%
+Good. The beast's strength is growing.
+Soon these doors will not be enough to stop him.
+%%
+If the beast is not fed, it will die.
+And then what - or who? - will take its place?

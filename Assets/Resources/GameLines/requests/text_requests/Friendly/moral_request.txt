@@ -7,3 +7,12 @@ Any other action will be seen as disobedience.
 If you disobey, Charlie will live. I will let him go free.
 If you obey, you will be rewarded. You will be rewarded beyonf your wildest dreams.
 The choice is yours.
+
+%%
+yes
+%%
+Good. Very good.
+%%
+I'm not angry, 34992.
+Just a little disappointed.
+We could have done great things together.

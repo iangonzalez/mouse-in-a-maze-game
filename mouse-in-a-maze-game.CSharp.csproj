@@ -104,9 +104,13 @@
     <None Include="Assets\Resources\GameLines\requests\first_request.txt" />
     <None Include="Assets\Resources\GameLines\requests\request_intros.txt" />
     <None Include="Assets\Resources\GameLines\requests\text_requests\Friendly\beast_request.txt" />
+    <None Include="Assets\Resources\GameLines\requests\text_requests\Friendly\do_you_like_me.txt" />
+    <None Include="Assets\Resources\GameLines\requests\text_requests\Friendly\good_boy.txt" />
     <None Include="Assets\Resources\GameLines\requests\text_requests\Friendly\moral_request.txt" />
-    <None Include="Assets\Resources\GameLines\requests\text_requests\Friendly\requests.txt" />
-    <None Include="Assets\Resources\GameLines\requests\text_requests\Hostile\requests.txt" />
+    <None Include="Assets\Resources\GameLines\requests\text_requests\Hostile\string_req.txt" />
+    <None Include="Assets\Resources\GameLines\requests\text_requests\Neutral\TextFile1.txt" />
+    <None Include="Assets\Resources\GameLines\requests\text_requests\Neutral\TextFile2.txt" />
+    <None Include="Assets\Resources\GameLines\requests\text_requests\Neutral\TextFile3.txt" />
     <None Include="Assets\Resources\GameLines\requests\text_requests\Neutral\requests.txt" />
     <None Include="Assets\Resources\GameLines\responses\negative\first_response.txt" />
     <None Include="Assets\Resources\GameLines\responses\negative\responses.txt" />

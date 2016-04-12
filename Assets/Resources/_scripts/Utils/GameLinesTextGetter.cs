@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
-
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 public static class GameLinesTextGetter {
     private static string linesDirectory = "GameLines/";
@@ -13,6 +15,49 @@ public static class GameLinesTextGetter {
         TextAsset responses = Resources.Load(linesDirectory + subPath) as TextAsset;
         string[] lines = responses.text.Split(new char[] { '\n' });
         return lines;
+    }
+
+    public static IEnumerable<string> GetFileNames(string subpath) {
+        DirectoryInfo relevantDir = new DirectoryInfo(Application.dataPath + "/Resources/" + linesDirectory + subpath);
+        foreach (FileInfo file in relevantDir.GetFiles()) {
+            yield return file.Name;
+        }
+    }
+
+    public static IEnumerable<GenericTextInterchange> ParseAllTextInterchangesInDir(string subpath) {
+        TextAsset[] textAssets = Resources.LoadAll<TextAsset>(linesDirectory + subpath);
+        foreach (var textAsset in textAssets) {
+            if (textAsset != null) {
+                yield return ParseGenericTextInterchangeFromText(textAsset.text);
+            }
+            
+        }
+    }
+
+    public static GenericTextInterchange ParseGenericTextInterchangeFromFile(string subpath) {
+        return ParseGenericTextInterchangeFromText(GetAllTextByPath(subpath));
+    }
+
+    public static GenericTextInterchange ParseGenericTextInterchangeFromText(string text) {
+        string[] interchangePieces = text.Split(new string[] { "%%" + Environment.NewLine }, StringSplitOptions.None);
+
+        if (interchangePieces.Length != 4) {
+            return null;
+        }
+
+        string question = interchangePieces[0];
+        string expectedResponse = interchangePieces[1];
+
+        Func<bool, string> getAiResponse =
+            (b) =>  (b ? interchangePieces[2] : interchangePieces[3]);
+
+
+        GenericTextInterchange interchange = new GenericTextInterchange(AIAlignmentState.Neutral);
+
+        interchange.SetExpectedResponse(expectedResponse);
+        interchange.SetQuestionAndResponse(question, getAiResponse);
+
+        return interchange;                    
     }
 
     public static string OpeningMonologue() {

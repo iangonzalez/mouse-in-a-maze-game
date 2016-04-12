@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using UnityEngine;
 
 public enum AICommunicationState {
@@ -116,6 +117,16 @@ public class GameAI : MonoBehaviour {
             //add the request methods to the list for request methods for each state
             perStateRequestActionList[state] = GetActionsByNameStart(aiMethods, stateName + "_Request_");
 
+            string requestPath = string.Format("requests/text_requests/{0}/", stateName);
+            foreach (var interchange in GameLinesTextGetter.ParseAllTextInterchangesInDir(requestPath)) {
+                if (interchange != null) {
+                    Action textAction = () => ExecTextInterchange(interchange);
+                    perStateRequestActionList[state].Add(textAction);
+                }
+            }
+            
+            
+
             //add the reaction methods to the list for reaction methods for each state
             perStateReactionList[state] = GetActionsByNameStart(aiMethods, stateName + "_Reaction_");
         }
@@ -162,15 +173,15 @@ public class GameAI : MonoBehaviour {
         else if (!openingDone) {
             maze.CloseDoorsInCell(playerCurrentCoords);
             //Friendly_Request_FeedTheBeast();
-            //Friendly_Request_KillAChild();    
+            //Friendly_Request_KillAChild();
             //Hostile_Reaction_LengthenHallways();
-            //Friendly_Reaction_AddGridLocationsToWalls();
+            Friendly_Reaction_AddGridLocationsToWalls();
             //Hostile_Reaction_LengthenPathToExit();
             //Friendly_Reaction_CreateShortcut();
             //Hostile_Reaction_TheBeastIsNear();
             //Hostile_Reaction_SpinTheMaze();
             //Neutral_Request_AskPlayerToStandStill();
-            SendMessageToPlayer(GameLinesTextGetter.OpeningMonologue(), oneWayCommChannel);
+            //SendMessageToPlayer(GameLinesTextGetter.OpeningMonologue(), oneWayCommChannel);
         }
         else if (playerCurrentCoords != player.MazeCellCoords && 
                  DistanceBetweenPlayerAndRoom(player.MazeCellCoords) < 0.3) {
@@ -302,12 +313,12 @@ public class GameAI : MonoBehaviour {
         RequestPlayerToFollowPath(cornerInterchange, roomExitCommChannel);
     }
 
-    private void Neutral_Request_MakeTextRequestToPlayer() {
-        maze.CloseDoorsInCell(playerCurrentCoords);
-        currentInterchange = new RandomTextRequestInterchange(aiAlignmentState);
-        Debug.Log(currentInterchange.expectedResponse.responseStr);
-        SendMessageToPlayer(currentInterchange.GetQuestionText(), textCommChannel);
-    }
+    //private void Neutral_Request_MakeTextRequestToPlayer() {
+    //    maze.CloseDoorsInCell(playerCurrentCoords);
+    //    currentInterchange = new RandomTextRequestInterchange(aiAlignmentState);
+    //    Debug.Log(currentInterchange.expectedResponse.responseStr);
+    //    SendMessageToPlayer(currentInterchange.GetQuestionText(), textCommChannel);
+    //}
 
     private void Neutral_Request_AskPlayerToStandStill() {
         maze.CloseDoorsInCell(playerCurrentCoords);
@@ -329,9 +340,9 @@ public class GameAI : MonoBehaviour {
         SendMessageToPlayer("I'm so angry at you!", oneWayCommChannel);
     }
 
-    private void Hostile_Request_MakeTextRequestToPlayer() {
-        Neutral_Request_MakeTextRequestToPlayer();
-    }
+    //private void Hostile_Request_MakeTextRequestToPlayer() {
+    //    Neutral_Request_MakeTextRequestToPlayer();
+    //}
 
     private void Hostile_Request_LockPlayerInRoom() {
         maze.CloseDoorsInCell(playerCurrentCoords);
@@ -415,9 +426,9 @@ public class GameAI : MonoBehaviour {
         SendMessageToPlayer("I love you so much!", oneWayCommChannel);
     }
 
-    private void Friendly_Request_MakeTextRequestToPlayer() {
-        Neutral_Request_MakeTextRequestToPlayer();
-    }
+    //private void Friendly_Request_MakeTextRequestToPlayer() {
+    //    Neutral_Request_MakeTextRequestToPlayer();
+    //}
 
     private void Friendly_Reaction_GiveHint() {
         List<IntVector2> pathToExit = maze.GetPathToExit(playerCurrentCoords);
@@ -437,25 +448,21 @@ public class GameAI : MonoBehaviour {
     //text from.
     //this will make generating these actions way easier (just loop thru list of files in that dir)
 
-    private void Friendly_Request_KillAChild() {
+    private void ExecTextInterchange(GenericTextInterchange interchange) {
         maze.CloseDoorsInCell(playerCurrentCoords);
-        var interchange = new GenericTextInterchange(aiAlignmentState);
-        interchange.SetQuestionAndResponse(GameLinesTextGetter.KillChildText(), GameLinesTextGetter.KillChildResponse);
-        interchange.SetExpectedResponse("yes");
-        currentInterchange = interchange;        
 
-        SendMessageToPlayer(currentInterchange.GetQuestionText(), textCommChannel);
-    }
-
-    private void Friendly_Request_FeedTheBeast() {
-        maze.CloseDoorsInCell(playerCurrentCoords);
-        var interchange = new GenericTextInterchange(aiAlignmentState);
-        interchange.SetQuestionAndResponse(GameLinesTextGetter.FeedBeastText(), GameLinesTextGetter.FeedBeastResponse);
-        interchange.SetExpectedResponse("yes");
         currentInterchange = interchange;
 
         SendMessageToPlayer(currentInterchange.GetQuestionText(), textCommChannel);
     }
+
+    //private void Friendly_Request_KillAChild() {
+    //    ExecTextInterchangeFromFile("requests/text_requests/Friendly/moral_request");
+    //}
+
+    //private void Friendly_Request_FeedTheBeast() {
+    //    ExecTextInterchangeFromFile("requests/text_requests/Friendly/beast_request");
+    //}
 
     private void Friendly_Reaction_CreateShortcut() {
         MazeDirection? shortcutDir = maze.CreateShortcutIfPossible(playerCurrentCoords);
