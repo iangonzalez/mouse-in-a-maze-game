@@ -31,13 +31,13 @@ public abstract class AiPlayerInterchange {
     public abstract string GetResponseToPlayerText(bool responseIsPositive);
 }
 
-public class TextOnlyInterchange : AiPlayerInterchange {
+public class RandomTextRequestInterchange : AiPlayerInterchange {
     private string question;
 
     //idea: write the lines here as tuples: (question, expected answer)
     //this can then pick a random line and know the question and expected answer
 
-    public TextOnlyInterchange(AIAlignmentState state) : base(state) {
+    public RandomTextRequestInterchange(AIAlignmentState state) : base(state) {
         expectedResponse = new PlayerResponse();
         string[] randQuestionAnswer = GameLinesTextGetter.RandomTextRequest(state).Split(new char[] { '\t' });
         question = randQuestionAnswer[0];
@@ -138,5 +138,36 @@ public class StayStillInterchange : AiPlayerInterchange {
 
     public override string GetResponseToPlayerText(bool responseIsPositive) {
         return GameLinesTextGetter.RandomResponse(isPositive: responseIsPositive);     
+    }
+}
+
+public class GenericTextInterchange : AiPlayerInterchange {
+    public string question;
+    public string responseFromPlayer;
+    public string responseToPlayer;
+
+    public Func<bool, string> getResponseToPlayer;
+
+    public GenericTextInterchange(AIAlignmentState state) : base(state) { }
+
+    public override ThreeState CheckIfCorrectResponse(PlayerResponse response) {
+        return (response.responseStr.ToLower() == responseFromPlayer).ToThreeState();
+    }
+
+    public override string GetQuestionText() {
+        return question;
+    }
+
+    public override string GetResponseToPlayerText(bool responseIsPositive) {
+        return getResponseToPlayer(responseIsPositive);
+    }
+
+    public void SetQuestionAndResponse(string question, Func<bool, string> responseFunc) {
+        this.question = question;
+        this.getResponseToPlayer = responseFunc;
+    }
+
+    public void SetExpectedResponse(string response) {
+        responseFromPlayer = response;
     }
 }

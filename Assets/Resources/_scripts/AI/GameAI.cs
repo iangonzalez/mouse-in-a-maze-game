@@ -158,7 +158,8 @@ public class GameAI : MonoBehaviour {
         }
         else if (!openingDone) {
             //maze.CloseDoorsInCell(playerCurrentCoords);
-            Hostile_Reaction_LengthenHallways();
+            Friendly_Request_KillAChild();
+            //Hostile_Reaction_LengthenHallways();
             //Friendly_Reaction_AddGridLocationsToWalls();
             //Hostile_Reaction_LengthenPathToExit();
             //Friendly_Reaction_CreateShortcut();
@@ -293,7 +294,7 @@ public class GameAI : MonoBehaviour {
 
     private void Neutral_Request_MakeTextRequestToPlayer() {
         maze.CloseDoorsInCell(playerCurrentCoords);
-        currentInterchange = new TextOnlyInterchange(aiAlignmentState);
+        currentInterchange = new RandomTextRequestInterchange(aiAlignmentState);
         SendMessageToPlayer(currentInterchange.GetQuestionText(), textCommChannel);
     }
 
@@ -420,11 +421,19 @@ public class GameAI : MonoBehaviour {
     }
 
     private void Friendly_Request_KillAChild() {
+        maze.CloseDoorsInCell(playerCurrentCoords);
+        var interchange = new GenericTextInterchange(aiAlignmentState);
+        interchange.SetQuestionAndResponse(GameLinesTextGetter.KillChildText(), GameLinesTextGetter.KillChildResponse);
+        interchange.SetExpectedResponse("yes");
+        currentInterchange = interchange;        
 
+        SendMessageToPlayer(currentInterchange.GetQuestionText(), textCommChannel);
     }
 
     private void Friendly_Request_FeedTheBeast() {
-
+        maze.CloseDoorsInCell(playerCurrentCoords);
+        var interchange = new GenericTextInterchange(aiAlignmentState);
+        //interchange.
     }
 
     private void Friendly_Reaction_CreateShortcut() {

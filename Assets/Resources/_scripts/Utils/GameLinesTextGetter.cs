@@ -66,6 +66,23 @@ public static class GameLinesTextGetter {
             return "I was going to lengthen your path to the exit.\nBut it looks like you're already pretty lost on your own. Ha!";
         }
     }
+
+    public static string KillChildText() {
+        return GetAllTextByPath("requests/text_requests/Friendly/moral_request");
+    }
+
+    public static string KillChildResponse(bool obeyed) {
+        if (obeyed) {
+            return "Good. Very good.";
+        }
+        else {
+            return "Charlie thanks you.\nI hope you aren't curious about what the reward was?\nNow you'll never know.";
+        }
+    }
+
+    public static string FeedBeastText() {
+        return GetAllTextByPath("requests/text_requests/Friendly/beast_request");
+    }
     
 }
 
