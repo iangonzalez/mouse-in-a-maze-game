@@ -41,7 +41,7 @@ public class RandomTextRequestInterchange : AiPlayerInterchange {
         expectedResponse = new PlayerResponse();
         string[] randQuestionAnswer = GameLinesTextGetter.RandomTextRequest(state).Split(new char[] { '\t' });
         question = randQuestionAnswer[0];
-        expectedResponse.responseStr = randQuestionAnswer[1];
+        expectedResponse.responseStr = randQuestionAnswer[1].Trim();
     }
 
     public override ThreeState CheckIfCorrectResponse(PlayerResponse response) {

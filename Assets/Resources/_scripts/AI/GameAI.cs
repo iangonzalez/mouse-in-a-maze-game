@@ -157,8 +157,9 @@ public class GameAI : MonoBehaviour {
             }
         }
         else if (!openingDone) {
-            //maze.CloseDoorsInCell(playerCurrentCoords);
-            Friendly_Request_KillAChild();
+            maze.CloseDoorsInCell(playerCurrentCoords);
+            //Friendly_Request_FeedTheBeast();
+            //Friendly_Request_KillAChild();    
             //Hostile_Reaction_LengthenHallways();
             //Friendly_Reaction_AddGridLocationsToWalls();
             //Hostile_Reaction_LengthenPathToExit();
@@ -166,8 +167,7 @@ public class GameAI : MonoBehaviour {
             //Hostile_Reaction_TheBeastIsNear();
             //Hostile_Reaction_SpinTheMaze();
             //Neutral_Request_AskPlayerToStandStill();
-            //SendMessageToPlayer(GameLinesTextGetter.OpeningMonologue(), oneWayCommChannel);
-            openingDone = true;
+            SendMessageToPlayer(GameLinesTextGetter.OpeningMonologue(), oneWayCommChannel);
         }
         else if (playerCurrentCoords != player.MazeCellCoords && 
                  DistanceBetweenPlayerAndRoom(player.MazeCellCoords) < 0.3) {
@@ -194,6 +194,11 @@ public class GameAI : MonoBehaviour {
     /// </summary>
     /// <param name="response"></param>
     private void HandleResponse(PlayerResponse response) {
+        if (!openingDone) {
+            openingDone = true;
+            maze.OpenDoorsInCell(playerCurrentCoords);
+        }
+
 
         //if there was no interchange, no response was expected, so do nothing
         if (currentInterchange == null) {
@@ -205,6 +210,8 @@ public class GameAI : MonoBehaviour {
             maze.OpenDoorsInCell(playerCurrentCoords);
 
             ThreeState wasResponseCorrect = currentInterchange.CheckIfCorrectResponse(response);
+            Debug.Log(wasResponseCorrect.ToBool());
+            Debug.Log(response.responseStr);
             string responseText = currentInterchange.GetResponseToPlayerText(wasResponseCorrect.ToBool());
             SendMessageToPlayer(responseText, oneWayCommChannel);
 
@@ -295,6 +302,7 @@ public class GameAI : MonoBehaviour {
     private void Neutral_Request_MakeTextRequestToPlayer() {
         maze.CloseDoorsInCell(playerCurrentCoords);
         currentInterchange = new RandomTextRequestInterchange(aiAlignmentState);
+        Debug.Log(currentInterchange.expectedResponse.responseStr);
         SendMessageToPlayer(currentInterchange.GetQuestionText(), textCommChannel);
     }
 
@@ -357,6 +365,7 @@ public class GameAI : MonoBehaviour {
     }
 
     private void Hostile_Reaction_LengthenHallways() {
+        SendMessageToPlayer(GameLinesTextGetter.LengthenHallwaysText, oneWayCommChannel);
         maze.ChangeHallwayLength(maze.RoomSeparationDistance + 3.0f, player);
     }
 
@@ -433,7 +442,11 @@ public class GameAI : MonoBehaviour {
     private void Friendly_Request_FeedTheBeast() {
         maze.CloseDoorsInCell(playerCurrentCoords);
         var interchange = new GenericTextInterchange(aiAlignmentState);
-        //interchange.
+        interchange.SetQuestionAndResponse(GameLinesTextGetter.FeedBeastText(), GameLinesTextGetter.FeedBeastResponse);
+        interchange.SetExpectedResponse("yes");
+        currentInterchange = interchange;
+
+        SendMessageToPlayer(currentInterchange.GetQuestionText(), textCommChannel);
     }
 
     private void Friendly_Reaction_CreateShortcut() {

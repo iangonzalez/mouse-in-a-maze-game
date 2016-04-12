@@ -83,6 +83,16 @@ public static class GameLinesTextGetter {
     public static string FeedBeastText() {
         return GetAllTextByPath("requests/text_requests/Friendly/beast_request");
     }
-    
+
+    public static string FeedBeastResponse(bool obeyed) {
+        if (obeyed) {
+            return "Good. The beast's strength is growing.\nSoon these doors will not be enough to stop him.";
+        }
+        else {
+            return "If the beast is not fed, it will die.\nAnd then what - or who? - will take its place?";
+        }
+    }
+
+    public static string LengthenHallwaysText = "Due to your earlier transgressions, the length of the hallways has increased.\nNote that I am not averse to further lengthening.\nEventually, the hallways will be miles long and you will traverse them in darkness.";
 }
 
