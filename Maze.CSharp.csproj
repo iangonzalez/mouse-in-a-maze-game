@@ -138,6 +138,7 @@
     <Compile Include="Assets\Resources\_scripts\Maze\MazePassage.cs" />
     <Compile Include="Assets\Resources\_scripts\Maze\MazeWall.cs" />
     <Compile Include="Assets\Resources\_scripts\AI\CommunicationChannels\OneWayTextCommunication.cs" />
+    <Compile Include="Assets\Resources\_scripts\Player\Breadcrumb.cs" />
     <Compile Include="Assets\Resources\_scripts\Player\Player.cs" />
     <Compile Include="Assets\Resources\_scripts\AI\PlayerResponses\PlayerResponse.cs" />
     <Compile Include="Assets\Resources\_scripts\AI\CommunicationChannels\TextCommunicationChannel.cs" />
@@ -163,6 +164,8 @@
     <None Include="Assets\Resources\prefabs\Wall.prefab" />
     <None Include="Assets\Resources\_scripts\Graph.vshost.exe.manifest" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Assets\Resources\GameLines\reactions\" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>

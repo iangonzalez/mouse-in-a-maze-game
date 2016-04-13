@@ -2,7 +2,6 @@
 using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
-using System.IO;
 using UnityEngine;
 
 public enum AICommunicationState {
@@ -21,7 +20,6 @@ public enum AIAlignmentState {
 public class GameAI : MonoBehaviour {
     public Player player;
     public Maze maze;
-
     private CommunicationChannel currentCommChannel;
 
     private TextCommunicationChannel textCommChannel;
@@ -98,14 +96,51 @@ public class GameAI : MonoBehaviour {
         return actions;
     }
 
-    //helper function to turn all of the requests in a given states GameLines directory into
+    //helper function to turn all of the requests in a given state's GameLines directory into
     //Actions that execute the interaction as a generic text interchange.
-    private IEnumerable<Action> CreateTextRequestActionList(string stateName) {
+    private IEnumerable<Action> CreateTextRequestActionList(string stateName, bool randomize = true) {
         string requestPath = string.Format("requests/text_requests/{0}/", stateName);
-        foreach (var interchange in GameLinesTextGetter.ParseAllTextInterchangesInDir(requestPath)) {
-            if (interchange != null) {
-                yield return (() => ExecTextInterchange(interchange));
-            }
+        IEnumerable<GenericTextInterchange> interchanges = GameLinesTextGetter.ParseAllTextInterchangesInDir(requestPath);
+
+        //randomize order
+        if (randomize) {
+            var rng = new System.Random(10);
+            interchanges = interchanges.OrderBy(i => rng.Next());
+        }
+
+        //the only way to get the desired behavior is via an enumerator.
+        //Each function will get the next item from the enumerator, and there
+        //will be exactly as many functions as items
+        IEnumerator<GenericTextInterchange> interchangesEnumerator = interchanges.GetEnumerator();
+        for (int i = 0; i < interchanges.Count(); i++) {
+            yield return () => {
+                if (interchangesEnumerator.MoveNext()) {
+                    ExecTextInterchange(interchangesEnumerator.Current);
+                }
+            };
+            
+        }
+    }
+
+    //helper function to turn all of the reaction text in a given state's GameLines directory
+    //into actions that send the message on the one way channel. Some code duplication from above,
+    //but combining these two functions would probably make them less comprehensible
+    private IEnumerable<Action> CreateTextReactionActionList(string stateName, bool randomize = true) {
+        string responsePath = string.Format("reactions/{0}", stateName);
+        IEnumerable<string> reactions = GameLinesTextGetter.GetAllTextInDir(responsePath);
+
+        if (randomize) {
+            var rng = new System.Random(10);
+            reactions = reactions.OrderBy(i => rng.Next());
+        }
+
+        IEnumerator<string> reactionEnumerator = reactions.GetEnumerator();
+        for (int i = 0; i < reactions.Count(); i++) {
+            yield return () => {
+                if (reactionEnumerator.MoveNext()) {
+                    SendMessageToPlayer(reactionEnumerator.Current, oneWayCommChannel);
+                }
+            };
         }
     }
 
@@ -134,6 +169,9 @@ public class GameAI : MonoBehaviour {
 
             //add the reaction methods to the list for reaction methods for each state
             perStateReactionList[state] = GetActionsByNameStart(aiMethods, stateName + "_Reaction_");
+
+            //add reactions found in the GameLines folder for this state:
+            perStateReactionList[state].AddRange(CreateTextReactionActionList(stateName));
         }
     }
     #endregion
@@ -177,15 +215,7 @@ public class GameAI : MonoBehaviour {
         }
         else if (!openingDone) {
             maze.CloseDoorsInCell(playerCurrentCoords);
-            //Friendly_Request_FeedTheBeast();
-            //Friendly_Request_KillAChild();
-            //Hostile_Reaction_LengthenHallways();
             Friendly_Reaction_AddGridLocationsToWalls();
-            //Hostile_Reaction_LengthenPathToExit();
-            //Friendly_Reaction_CreateShortcut();
-            //Hostile_Reaction_TheBeastIsNear();
-            //Hostile_Reaction_SpinTheMaze();
-            //Neutral_Request_AskPlayerToStandStill();
             //SendMessageToPlayer(GameLinesTextGetter.OpeningMonologue(), oneWayCommChannel);
         }
         else if (playerCurrentCoords != player.MazeCellCoords && 
@@ -343,11 +373,6 @@ public class GameAI : MonoBehaviour {
     //Hostile AI actions
     #region
 
-    private void Hostile_Request_SendAngryMessage() {
-        SendMessageToPlayer("I'm so angry at you!", oneWayCommChannel);
-    }
-    
-
     private void Hostile_Request_LockPlayerInRoom() {
         maze.CloseDoorsInCell(playerCurrentCoords);
         var interchange = new LockPlayerInRoomInterchange(aiAlignmentState);
@@ -421,14 +446,27 @@ public class GameAI : MonoBehaviour {
         maze.AddSignpostToCell(playerCurrentCoords, MazeDirections.RandDirection, player.transform.localPosition);
     }
 
+    private void Hostile_Reaction_DestroyBreadcrumbs() {
+        SendMessageToPlayer(GameLinesTextGetter.DestroyYourBreadcrumbsText, oneWayCommChannel);
+
+        player.DestroyDroppedBreadcrumbs();
+    }
+
+    private void Hostile_Reaction_ReduceBreadcrumbs() {
+        SendMessageToPlayer(GameLinesTextGetter.ReduceBreadCrumbsText, oneWayCommChannel);
+
+        if (player.maxBreadcrumbs > 5) {
+            player.maxBreadcrumbs -= 5;
+        }
+        else {
+            player.maxBreadcrumbs = 0;
+        }
+    }
+
     #endregion
 
     //Friendly AI actions
     #region
-
-    private void Friendly_Request_SendHappyMessage() {
-        SendMessageToPlayer("I love you so much!", oneWayCommChannel);
-    }
 
     private void Friendly_Reaction_GiveHint() {
         List<IntVector2> pathToExit = maze.GetPathToExit(playerCurrentCoords);
@@ -453,6 +491,12 @@ public class GameAI : MonoBehaviour {
         if (shortcutPossible) {
             maze.AddSignpostToCell(playerCurrentCoords, shortcutDir.GetValueOrDefault(), player.transform.localPosition);
         }
+    }
+
+    private void Friendly_Reaction_GiveMoreBreadCrumbs() {
+        SendMessageToPlayer(GameLinesTextGetter.GiveMoreBreadcrumbsText, oneWayCommChannel);
+
+        player.maxBreadcrumbs += 10;
     }
     
     #endregion

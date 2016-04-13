@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 public enum PlayerState {
     Active,
@@ -16,6 +18,9 @@ public class Player : MonoBehaviour {
 
     private IntVector2 mazeCellCoords;
     private bool inCell;
+
+    public int maxBreadcrumbs = 11;
+    private List<Breadcrumb> breadcrumbsDropped;
 
     private PlayerState currentState;
 
@@ -42,6 +47,8 @@ public class Player : MonoBehaviour {
 
         //set initial player state
         currentState = PlayerState.Active;
+
+        breadcrumbsDropped = new List<Breadcrumb>(maxBreadcrumbs + 1);
     }
 
     /// <summary>
@@ -123,12 +130,29 @@ public class Player : MonoBehaviour {
     }
 
     private void DropBreadCrumb() {
-        GameObject breadcrumb = Instantiate(Resources.Load("prefabs/Breadcrumb") as GameObject);
-        if (breadcrumb == null) {
+        GameObject breadcrumbObj = Instantiate(Resources.Load("prefabs/Breadcrumb") as GameObject);
+        if (breadcrumbObj == null) {
             Debug.LogError("breadcrumb was null");
         }
-        breadcrumb.transform.parent = transform.parent;
-        breadcrumb.transform.localPosition = transform.localPosition + (ForwardVector * 0.5f);
+        breadcrumbObj.transform.parent = transform.parent;
+        breadcrumbObj.transform.localPosition = transform.localPosition + (ForwardVector * 0.5f);
+
+        Breadcrumb breadcrumb = breadcrumbObj.GetComponent<Breadcrumb>();
+
+        if (breadcrumb != null) {
+            breadcrumbsDropped.Add(breadcrumb);
+            while (breadcrumbsDropped.Count > maxBreadcrumbs) {
+                Destroy(breadcrumbsDropped[0].gameObject);
+                breadcrumbsDropped.RemoveAt(0);
+            }
+        }
+    }
+
+    public void DestroyDroppedBreadcrumbs() {
+        foreach (var crumb in breadcrumbsDropped) {
+            Destroy(crumb.gameObject);
+        }
+        breadcrumbsDropped = new List<Breadcrumb>(maxBreadcrumbs + 1);
     }
 
     /// <summary>

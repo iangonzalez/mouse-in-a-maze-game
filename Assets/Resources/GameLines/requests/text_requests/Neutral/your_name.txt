@@ -3,7 +3,7 @@
 %%
 test subject 34992
 %%
-RANDOM
+That's right. Well done.
 %%
 No. Your name is test subject 34992.
 You are to forget your old name.

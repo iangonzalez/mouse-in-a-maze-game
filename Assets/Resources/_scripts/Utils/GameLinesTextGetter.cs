@@ -25,12 +25,10 @@ public static class GameLinesTextGetter {
     }
 
     public static IEnumerable<GenericTextInterchange> ParseAllTextInterchangesInDir(string subpath) {
-        TextAsset[] textAssets = Resources.LoadAll<TextAsset>(linesDirectory + subpath);
-        foreach (var textAsset in textAssets) {
-            if (textAsset != null) {
-                yield return ParseGenericTextInterchangeFromText(textAsset.text);
+        foreach (string text in GetAllTextInDir(subpath)) {
+            if (text != null) {
+                yield return ParseGenericTextInterchangeFromText(text);
             }
-            
         }
     }
 
@@ -50,7 +48,7 @@ public static class GameLinesTextGetter {
 
         Func<bool, string> getAiResponse;
         
-        if (interchangePieces[2] == "RANDOM") {
+        if (interchangePieces[2].Trim() == "RANDOM") {
             interchangePieces[2] = RandomResponse(true);
         }
         if (interchangePieces[3] == "RANDOM") {
@@ -66,6 +64,14 @@ public static class GameLinesTextGetter {
         interchange.SetQuestionAndResponse(question, getAiResponse);
 
         return interchange;                    
+    }
+
+    public static IEnumerable<string> GetAllTextInDir(string subpath) {
+        foreach (TextAsset textAsset in Resources.LoadAll<TextAsset>(linesDirectory + subpath)) {
+            if (textAsset != null) {
+                yield return textAsset.text;
+            }
+        }
     }
 
     public static string OpeningMonologue() {
@@ -116,5 +122,11 @@ public static class GameLinesTextGetter {
     }
 
     public static string LengthenHallwaysText = "Due to your earlier transgressions, the length of the hallways has increased.\nNote that I am not averse to further lengthening.\nEventually, the hallways will be miles long and you will traverse them in darkness.";
+
+    public static string GiveMoreBreadcrumbsText = "I am a kind and gentle god - er, researcher.\nAs a reward for your obedience, you may use up to 10 extra breadcrumbs without them disappearing.";
+
+    public static string DestroyYourBreadcrumbsText = "You broke my heart earlier.\nI thought we were friends.\nPerhaps you will learn why it's good to be my friend if I destroy all the breadcrumbds you've placed.";
+
+    public static string ReduceBreadCrumbsText = "You haven't been very nice to me so far.\nNot cool, yo.\nI was kind enough to give you some breadcrumbs to mark your way in the maze.\nNow you will have fewer.";
 }
 
