@@ -1,0 +1,14 @@
+﻿Quickly: Tell me how many Es are in this sentence.
+
+%%
+5
+%%
+Nice counting.
+It might reduce your sentence.
+Did I say sentence? I meant your time in the maze. Yes, that's what I meant.
+%%
+Wrong.
+Just so you know, the right answer was 5.
+Can you even count?
+And no, don't try to tell me that "five" is also acceptable.
+Anyone who would waste 4 keystrokes to write out 5 deserves to be wrong.

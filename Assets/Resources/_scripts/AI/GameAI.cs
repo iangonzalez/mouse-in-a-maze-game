@@ -98,6 +98,17 @@ public class GameAI : MonoBehaviour {
         return actions;
     }
 
+    //helper function to turn all of the requests in a given states GameLines directory into
+    //Actions that execute the interaction as a generic text interchange.
+    private IEnumerable<Action> CreateTextRequestActionList(string stateName) {
+        string requestPath = string.Format("requests/text_requests/{0}/", stateName);
+        foreach (var interchange in GameLinesTextGetter.ParseAllTextInterchangesInDir(requestPath)) {
+            if (interchange != null) {
+                yield return (() => ExecTextInterchange(interchange));
+            }
+        }
+    }
+
     /// <summary>
     /// Initialize the action lists for each alignment state. This gets every 0-param, void-returning method in the object
     /// that starts with the state's name (plus "_") and puts it in a list for that state.
@@ -117,14 +128,8 @@ public class GameAI : MonoBehaviour {
             //add the request methods to the list for request methods for each state
             perStateRequestActionList[state] = GetActionsByNameStart(aiMethods, stateName + "_Request_");
 
-            string requestPath = string.Format("requests/text_requests/{0}/", stateName);
-            foreach (var interchange in GameLinesTextGetter.ParseAllTextInterchangesInDir(requestPath)) {
-                if (interchange != null) {
-                    Action textAction = () => ExecTextInterchange(interchange);
-                    perStateRequestActionList[state].Add(textAction);
-                }
-            }
-            
+            //add the generic text requests found in the GameLines folder for this state as actions:
+            perStateRequestActionList[state].AddRange(CreateTextRequestActionList(stateName));            
             
 
             //add the reaction methods to the list for reaction methods for each state
@@ -291,6 +296,19 @@ public class GameAI : MonoBehaviour {
         currentCommChannel = channel;
         channel.StartCommunicationWithPlayer(player, this, message);
     }
+
+    /// <summary>
+    /// Given a generic text interchange object, executes the interchange on the 2 way commchannel
+    /// and closes doors on the player
+    /// </summary>
+    /// <param name="interchange"></param>
+    private void ExecTextInterchange(GenericTextInterchange interchange) {
+        maze.CloseDoorsInCell(playerCurrentCoords);
+
+        currentInterchange = interchange;
+
+        SendMessageToPlayer(currentInterchange.GetQuestionText(), textCommChannel);
+    }
     #endregion
 
 
@@ -313,21 +331,10 @@ public class GameAI : MonoBehaviour {
         RequestPlayerToFollowPath(cornerInterchange, roomExitCommChannel);
     }
 
-    //private void Neutral_Request_MakeTextRequestToPlayer() {
-    //    maze.CloseDoorsInCell(playerCurrentCoords);
-    //    currentInterchange = new RandomTextRequestInterchange(aiAlignmentState);
-    //    Debug.Log(currentInterchange.expectedResponse.responseStr);
-    //    SendMessageToPlayer(currentInterchange.GetQuestionText(), textCommChannel);
-    //}
-
     private void Neutral_Request_AskPlayerToStandStill() {
         maze.CloseDoorsInCell(playerCurrentCoords);
         currentInterchange = new StayStillInterchange(aiAlignmentState);
         SendMessageToPlayer(currentInterchange.GetQuestionText(), stillnessTimedComm);
-    }
-
-    private void Neutral_Reaction_SayANeutralPhrase() {
-        //TODO: Add code for the AI to say some banal things.
     }
 
 
@@ -339,10 +346,7 @@ public class GameAI : MonoBehaviour {
     private void Hostile_Request_SendAngryMessage() {
         SendMessageToPlayer("I'm so angry at you!", oneWayCommChannel);
     }
-
-    //private void Hostile_Request_MakeTextRequestToPlayer() {
-    //    Neutral_Request_MakeTextRequestToPlayer();
-    //}
+    
 
     private void Hostile_Request_LockPlayerInRoom() {
         maze.CloseDoorsInCell(playerCurrentCoords);
@@ -426,10 +430,6 @@ public class GameAI : MonoBehaviour {
         SendMessageToPlayer("I love you so much!", oneWayCommChannel);
     }
 
-    //private void Friendly_Request_MakeTextRequestToPlayer() {
-    //    Neutral_Request_MakeTextRequestToPlayer();
-    //}
-
     private void Friendly_Reaction_GiveHint() {
         List<IntVector2> pathToExit = maze.GetPathToExit(playerCurrentCoords);
 
@@ -442,27 +442,6 @@ public class GameAI : MonoBehaviour {
         SendMessageToPlayer("The coordinates of each cell may help you navigate, friend.", oneWayCommChannel);
         maze.AddCoordsToAllCells();
     }
-
-    //the two functions below can be generalized into a simple pattern
-    //can just be a simple function parameterized by the name of the file to draw the
-    //text from.
-    //this will make generating these actions way easier (just loop thru list of files in that dir)
-
-    private void ExecTextInterchange(GenericTextInterchange interchange) {
-        maze.CloseDoorsInCell(playerCurrentCoords);
-
-        currentInterchange = interchange;
-
-        SendMessageToPlayer(currentInterchange.GetQuestionText(), textCommChannel);
-    }
-
-    //private void Friendly_Request_KillAChild() {
-    //    ExecTextInterchangeFromFile("requests/text_requests/Friendly/moral_request");
-    //}
-
-    //private void Friendly_Request_FeedTheBeast() {
-    //    ExecTextInterchangeFromFile("requests/text_requests/Friendly/beast_request");
-    //}
 
     private void Friendly_Reaction_CreateShortcut() {
         MazeDirection? shortcutDir = maze.CreateShortcutIfPossible(playerCurrentCoords);

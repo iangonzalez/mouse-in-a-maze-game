@@ -1,0 +1,11 @@
+﻿On a scale of 10 to 10, how much are you enjoying the study?
+
+%%
+10
+%%
+How wonderful!
+I'm also enjoying it!
+%%
+The question was simple, 34992.
+There's only one number on the scale.
+I don't know how to make this easier for you.

@@ -1,0 +1,9 @@
+﻿What is your name, test subject 34992?	
+
+%%
+test subject 34992
+%%
+RANDOM
+%%
+No. Your name is test subject 34992.
+You are to forget your old name.

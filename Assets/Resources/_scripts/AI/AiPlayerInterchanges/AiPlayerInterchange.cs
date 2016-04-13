@@ -31,34 +31,6 @@ public abstract class AiPlayerInterchange {
     public abstract string GetResponseToPlayerText(bool responseIsPositive);
 }
 
-public class RandomTextRequestInterchange : AiPlayerInterchange {
-    private string question;
-
-    //idea: write the lines here as tuples: (question, expected answer)
-    //this can then pick a random line and know the question and expected answer
-
-    public RandomTextRequestInterchange(AIAlignmentState state) : base(state) {
-        expectedResponse = new PlayerResponse();
-        string[] randQuestionAnswer = GameLinesTextGetter.RandomTextRequest(state).Split(new char[] { '\t' });
-        question = randQuestionAnswer[0];
-        expectedResponse.responseStr = randQuestionAnswer[1].Trim();
-    }
-
-    public override ThreeState CheckIfCorrectResponse(PlayerResponse response) {
-        return (expectedResponse.responseStr == response.responseStr).ToThreeState();
-    }
-
-    //todo: change these two methods to be text only specific
-    public override string GetQuestionText() {
-        return GameLinesTextGetter.RandomRequestIntro() + "\n" + question;
-    }
-
-    public override string GetResponseToPlayerText(bool responseIsPositive) {
-        return GameLinesTextGetter.RandomResponse(isPositive: responseIsPositive);
-    }
-}
-
-
 public abstract class PathInterchange : AiPlayerInterchange {
 
     public PathInterchange(AIAlignmentState state) : base(state) {   }

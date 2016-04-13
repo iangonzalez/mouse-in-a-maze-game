@@ -48,9 +48,17 @@ public static class GameLinesTextGetter {
         string question = interchangePieces[0];
         string expectedResponse = interchangePieces[1];
 
-        Func<bool, string> getAiResponse =
-            (b) =>  (b ? interchangePieces[2] : interchangePieces[3]);
+        Func<bool, string> getAiResponse;
+        
+        if (interchangePieces[2] == "RANDOM") {
+            interchangePieces[2] = RandomResponse(true);
+        }
+        if (interchangePieces[3] == "RANDOM") {
+            interchangePieces[3] = RandomResponse(false);
+        }
 
+
+        getAiResponse = (b) =>  (b ? interchangePieces[2] : interchangePieces[3]);
 
         GenericTextInterchange interchange = new GenericTextInterchange(AIAlignmentState.Neutral);
 
@@ -85,11 +93,6 @@ public static class GameLinesTextGetter {
         return lines[UnityEngine.Random.Range(0, lines.Length)];
     }
 
-    public static string RandomTextRequest(AIAlignmentState state = AIAlignmentState.Neutral) {
-        string[] lines = GetAllLinesByPath("requests/text_requests/" + state.ToString() + "/requests");
-        return lines[UnityEngine.Random.Range(0, lines.Length)];
-    }
-
     public static string FalseHintText = "Have a signpost. It might point in the right direction.\nIt might not.";
     public static string SpinMazeText = "Let's play a fun game! It's called 'I spin the maze, you get lost.'";
     public static string BeastIsNearText = "When I get angry, strange things start to happen.\nBeasts appear where before there were none.";
@@ -109,32 +112,6 @@ public static class GameLinesTextGetter {
         }
         else {
             return "I was going to lengthen your path to the exit.\nBut it looks like you're already pretty lost on your own. Ha!";
-        }
-    }
-
-    public static string KillChildText() {
-        return GetAllTextByPath("requests/text_requests/Friendly/moral_request");
-    }
-
-    public static string KillChildResponse(bool obeyed) {
-        if (obeyed) {
-            return "Good. Very good.";
-        }
-        else {
-            return "Charlie thanks you.\nI hope you aren't curious about what the reward was?\nNow you'll never know.";
-        }
-    }
-
-    public static string FeedBeastText() {
-        return GetAllTextByPath("requests/text_requests/Friendly/beast_request");
-    }
-
-    public static string FeedBeastResponse(bool obeyed) {
-        if (obeyed) {
-            return "Good. The beast's strength is growing.\nSoon these doors will not be enough to stop him.";
-        }
-        else {
-            return "If the beast is not fed, it will die.\nAnd then what - or who? - will take its place?";
         }
     }
 
