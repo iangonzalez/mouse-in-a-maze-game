@@ -128,5 +128,9 @@ public static class GameLinesTextGetter {
     public static string DestroyYourBreadcrumbsText = "You broke my heart earlier.\nI thought we were friends.\nPerhaps you will learn why it's good to be my friend if I destroy all the breadcrumbds you've placed.";
 
     public static string ReduceBreadCrumbsText = "You haven't been very nice to me so far.\nNot cool, yo.\nI was kind enough to give you some breadcrumbs to mark your way in the maze.\nNow you will have fewer.";
+
+    public static string GetEndingMonologue(AIAlignmentState state) {
+        return GetAllTextByPath("ending/" + state.ToString() + "/ending_monologue_standard");
+    }
 }
 

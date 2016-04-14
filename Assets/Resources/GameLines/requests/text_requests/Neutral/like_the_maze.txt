@@ -3,7 +3,7 @@ You liking the maze so far? Making good progress?
 It's quite a beautiful thing, isn't it?
 
 %%
-yes
+yes|yeah
 %%
 I'm glad you agree! I wonder what other shared interests we have...
 %%

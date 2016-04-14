@@ -93,6 +93,10 @@
     <Content Include="Assets\Resources\GameLines\requests\text_requests\Neutral\do_you_like_me.txt" />
     <Content Include="Assets\Resources\GameLines\requests\text_requests\Neutral\say_yes.txt" />
     <Content Include="Assets\Resources\GameLines\requests\text_requests\Neutral\like_the_maze.txt" />
+    <Content Include="Assets\Resources\GameLines\requests\text_requests\Neutral\chill.txt" />
+    <Content Include="Assets\Resources\GameLines\requests\text_requests\Neutral\math.txt" />
+    <Content Include="Assets\Resources\GameLines\requests\text_requests\Neutral\turing.txt" />
+    <Content Include="Assets\Resources\GameLines\requests\text_requests\Neutral\warispeace.txt" />
     <Content Include="Assets\Resources\GameLines\requests\text_requests\Neutral\your_name.txt" />
     <Content Include="Assets\Resources\GameLines\requests\text_requests\Neutral\scale.txt" />
     <Content Include="Assets\Resources\GameLines\requests\text_requests\Neutral\my_name.txt" />
@@ -102,6 +106,7 @@
     <Content Include="Assets\Resources\GameLines\responses\negative\very_negative\responses.txt" />
     <Content Include="Assets\Resources\GameLines\responses\positive\first_response.txt" />
     <Content Include="Assets\Resources\GameLines\responses\positive\responses.txt" />
+    <Content Include="Assets\Resources\GameLines\ending\ending_monologue_standard.txt" />
     <Content Include="Assets\Resources\_scripts\Graph.dll" />
     <Content Include="Assets\Resources\_scripts\Graph.dll.mdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

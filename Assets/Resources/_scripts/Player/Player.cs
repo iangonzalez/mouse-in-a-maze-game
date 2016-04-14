@@ -24,6 +24,8 @@ public class Player : MonoBehaviour {
 
     private PlayerState currentState;
 
+    private bool canFrozenStateBeChanged = true;
+
     //public accessor for the maze cell coordinates of the player (get only)
     public IntVector2 MazeCellCoords {
         get {
@@ -170,6 +172,11 @@ public class Player : MonoBehaviour {
         transform.localPosition = position;
     }
 
+    public void PermanentlyFreezePlayer() {
+        currentState = PlayerState.Frozen;
+        canFrozenStateBeChanged = false;
+    }
+
     public void EnablePlayerCamera() {
         if (playerCamera == null) {
             playerCamera = GetComponentInChildren<Camera>();
@@ -185,10 +192,14 @@ public class Player : MonoBehaviour {
     }
 
     public void FreezePlayer() {
-        currentState = PlayerState.Frozen;
+        if (canFrozenStateBeChanged) {
+            currentState = PlayerState.Frozen;
+        }
     }
 
     public void UnfreezePlayer() {
-        currentState = PlayerState.Active;
+        if (canFrozenStateBeChanged) {
+            currentState = PlayerState.Active;
+        }
     }
 }

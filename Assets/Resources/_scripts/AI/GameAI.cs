@@ -104,7 +104,7 @@ public class GameAI : MonoBehaviour {
 
         //randomize order
         if (randomize) {
-            var rng = new System.Random(10);
+            var rng = new System.Random();
             interchanges = interchanges.OrderBy(i => rng.Next());
         }
 
@@ -115,6 +115,9 @@ public class GameAI : MonoBehaviour {
         for (int i = 0; i < interchanges.Count(); i++) {
             yield return () => {
                 if (interchangesEnumerator.MoveNext()) {
+                    if (interchangesEnumerator.Current == null) {
+                        Debug.Log("next interchange was null");
+                    }
                     ExecTextInterchange(interchangesEnumerator.Current);
                 }
             };
@@ -130,7 +133,7 @@ public class GameAI : MonoBehaviour {
         IEnumerable<string> reactions = GameLinesTextGetter.GetAllTextInDir(responsePath);
 
         if (randomize) {
-            var rng = new System.Random(10);
+            var rng = new System.Random();
             reactions = reactions.OrderBy(i => rng.Next());
         }
 
@@ -214,8 +217,9 @@ public class GameAI : MonoBehaviour {
             }
         }
         else if (!openingDone) {
-            maze.CloseDoorsInCell(playerCurrentCoords);
-            Friendly_Reaction_AddGridLocationsToWalls();
+            //maze.CloseDoorsInCell(playerCurrentCoords);
+            InitiateEnding();
+            //Friendly_Reaction_AddGridLocationsToWalls();
             //SendMessageToPlayer(GameLinesTextGetter.OpeningMonologue(), oneWayCommChannel);
         }
         else if (playerCurrentCoords != player.MazeCellCoords && 
@@ -498,6 +502,21 @@ public class GameAI : MonoBehaviour {
 
         player.maxBreadcrumbs += 10;
     }
-    
+
     #endregion
+
+    //start off the end of the game. ending changes depending on ai state.
+    public void InitiateEnding() {
+        maze.CloseDoorsInCell(playerCurrentCoords);
+        player.PermanentlyFreezePlayer();
+        SendMessageToPlayer(GameLinesTextGetter.GetEndingMonologue(AIAlignmentState.Neutral), oneWayCommChannel);
+
+        ObjectMover objMoverTwo = ObjectMover.CreateObjectMover();
+
+        objectMover.MoveObjectStraightLine(
+            player.gameObject, 
+            new Vector3(0, 2.0f, 0), 
+            1f);
+        objMoverTwo.SpinObject(player.gameObject, 7200f, 30f);
+    }
 }

@@ -123,7 +123,10 @@ public class GenericTextInterchange : AiPlayerInterchange {
     public GenericTextInterchange(AIAlignmentState state) : base(state) { }
 
     public override ThreeState CheckIfCorrectResponse(PlayerResponse response) {
-        return (response.responseStr.ToLower().Trim() == responseFromPlayer.ToLower().Trim()).ToThreeState();
+        var allowedResponses = responseFromPlayer.Split(new char[] { '|' }).Select(s => s.Trim().ToLower());
+        bool isResponseOk = allowedResponses.Any(s => s == response.responseStr.ToLower().Trim());
+
+        return isResponseOk.ToThreeState();
     }
 
     public override string GetQuestionText() {

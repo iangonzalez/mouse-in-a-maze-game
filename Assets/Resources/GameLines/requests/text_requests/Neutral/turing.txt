@@ -1,0 +1,14 @@
+﻿Beep boop.
+I am a robot.
+But you can't be a robot if you're in this study.
+Let's do a quick Turing test:
+Are you human?
+
+%%
+yes
+%%
+Oh, phew.
+%%
+Damn. How embarassing.
+I'm going to have to figure out how to cover this up now.
+You're so exhausting.

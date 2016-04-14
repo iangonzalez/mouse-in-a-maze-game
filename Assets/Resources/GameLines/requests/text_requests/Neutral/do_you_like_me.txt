@@ -1,7 +1,7 @@
 Do you like me, test subject 34992?	
 
 %%
-yes
+yes|yeah
 %%
 How wonderful!
 I like you too. I like you almost as much as I like being cryptic.

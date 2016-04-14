@@ -8,6 +8,7 @@ public enum MovementType {
     None,
     Spin,
     Shake,
+    LineMovement,
 }
 
 public class ObjectMover : MonoBehaviour {
@@ -24,6 +25,9 @@ public class ObjectMover : MonoBehaviour {
     private int shakeCount = 0;
     private Vector3 shakeAxis;
     private float perShakeDegrees;
+
+    //move along line path fields
+    private Vector3 targetPosition;
 
     public static ObjectMover CreateObjectMover() {
         var obj = Instantiate(Resources.Load("prefabs/ObjectMover")) as GameObject;
@@ -89,6 +93,19 @@ public class ObjectMover : MonoBehaviour {
                 }
             }
         }
+        else if (movement == MovementType.LineMovement && objToMove != null) {
+            float movementTowardsTarget = Time.deltaTime * rate;
+            Vector3 newPos = Vector3.MoveTowards(objToMove.transform.localPosition, targetPosition, movementTowardsTarget);
+            objToMove.transform.localPosition = newPos;
+
+            if (newPos == targetPosition) {
+                if (onFinish != null) {
+                    onFinish(objToMove);
+                }
+
+                ResetFields();
+            }
+        }
     }
 
     ///spin the given object the number of degrees at the given rate, call onfinish when done
@@ -127,6 +144,20 @@ public class ObjectMover : MonoBehaviour {
         shakeAxis = axis;
         this.perShakeDegrees = perShakeDegrees;
 
+
+        return true;
+    }
+
+    public bool MoveObjectStraightLine(GameObject obj, Vector3 targetPosition, float rate, 
+                                        Action<GameObject> onFinish = null) {
+        if (objToMove != null) {
+            return false;
+        }
+
+        objToMove = obj;
+        movement = MovementType.LineMovement;
+        this.rate = rate;
+        this.targetPosition = targetPosition;
 
         return true;
     }
