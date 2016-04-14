@@ -54,6 +54,11 @@ public class Maze : MonoBehaviour {
     /// created on nodes and maze doors / hallways on edges.
     /// </summary>     
     public void Generate() {
+        if (transform.localScale != new Vector3(1f,1f,1f)) {
+            transform.localScale = new Vector3(1f, 1f, 1f);
+        }
+
+
         MazeGrid = new GridGraph(size.x, size.z);
         cells = new MazeCell[MazeGrid.x, MazeGrid.y];
         MazeDirection[] dirs = new MazeDirection[] { MazeDirection.North, MazeDirection.South, MazeDirection.East, MazeDirection.West };
@@ -101,6 +106,23 @@ public class Maze : MonoBehaviour {
 
         //make the maze bigger or smaller as desired
         transform.localScale = new Vector3(MazeScale, MazeScale, MazeScale);
+        
+        
+    }
+
+    public void DestroyCurrentMaze() {
+        for (int i = 0; i < size.x; i++) {
+            for (int j = 0; j < size.z; j++) {
+                MazeCell cell = cells[i, j];
+                foreach (MazeDirection dir in Enum.GetValues(typeof(MazeDirection))) {
+                    DestroyMazeCellEdge(cell, dir);
+                }
+                DestroyMazeCell(cell);
+            }
+        }
+        foreach (var e in MazeGrid.edgeList) {
+            DestroyHallway(e);
+        }
     }
 
     private Vector3 GetHallwayPosition(GraphEdge edge) {
@@ -157,6 +179,10 @@ public class Maze : MonoBehaviour {
         Destroy(edge.gameObject);
     }
 
+    private void DestroyMazeCell(MazeCell cell) {
+        Destroy(cell.gameObject);
+    }
+
     private void CreatePassage(MazeCell cell, MazeCell otherCell, MazeDirection direction) {
         MazeDoor passage = Instantiate(doorPrefab) as MazeDoor;
         passage.Initialize(cell, otherCell, direction);
@@ -173,6 +199,7 @@ public class Maze : MonoBehaviour {
         newCell.name = "Cell " + coordinates.x + "," + coordinates.z;
         newCell.transform.parent = transform;
         newCell.transform.localPosition = GetCellLocalPosition(coordinates.x, coordinates.z);
+        //newCell.transform.localScale = new Vector3(MazeScale, MazeScale, MazeScale);
         newCell.coordinates = coordinates;
         return newCell;
     }

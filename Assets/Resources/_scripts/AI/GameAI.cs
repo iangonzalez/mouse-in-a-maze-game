@@ -218,9 +218,12 @@ public class GameAI : MonoBehaviour {
         }
         else if (!openingDone) {
             //maze.CloseDoorsInCell(playerCurrentCoords);
-            InitiateEnding();
+            //InitiateEnding();
+            //SingleHallwayEnding();
+            //reactToPlayer = true;
+            //ResizeMaze(new IntVector2(1, 10), new IntVector2(0, 0));
             //Friendly_Reaction_AddGridLocationsToWalls();
-            //SendMessageToPlayer(GameLinesTextGetter.OpeningMonologue(), oneWayCommChannel);
+            SendMessageToPlayer(GameLinesTextGetter.OpeningMonologue(), oneWayCommChannel);
         }
         else if (playerCurrentCoords != player.MazeCellCoords && 
                  DistanceBetweenPlayerAndRoom(player.MazeCellCoords) < 0.3) {
@@ -285,11 +288,19 @@ public class GameAI : MonoBehaviour {
             aiAlignmentState = AIAlignmentState.Neutral;
         }
         else if (numberOfInfractions < -2) {
-            aiAlignmentState = AIAlignmentState.Friendly;
+            if (numberOfInfractions <= -5) {
+                aiAlignmentState = AIAlignmentState.VeryFriendly;
+                SingleHallwayEnding();
+            }
+            else {
+                aiAlignmentState = AIAlignmentState.Friendly;
+            }
+            
         }
         else if (numberOfInfractions > 2) {
             aiAlignmentState = AIAlignmentState.Hostile;
         }
+        
     }
     #endregion
 
@@ -506,17 +517,37 @@ public class GameAI : MonoBehaviour {
     #endregion
 
     //start off the end of the game. ending changes depending on ai state.
-    public void InitiateEnding() {
+    private void FlyoverMonologueEnding() {
         maze.CloseDoorsInCell(playerCurrentCoords);
         player.PermanentlyFreezePlayer();
         SendMessageToPlayer(GameLinesTextGetter.GetEndingMonologue(AIAlignmentState.Neutral), oneWayCommChannel);
 
         ObjectMover objMoverTwo = ObjectMover.CreateObjectMover();
 
-        objectMover.MoveObjectStraightLine(
-            player.gameObject, 
-            new Vector3(0, 2.0f, 0), 
-            1f);
+        objectMover.MoveObjectStraightLine(player.gameObject, new Vector3(0, 2.0f, 0), 1f);
         objMoverTwo.SpinObject(player.gameObject, 7200f, 30f);
+    }
+
+    private void ResizeMaze(IntVector2 newSize, IntVector2 newPlayerCoords) {
+        
+        player.FreezePlayer();
+        maze.DestroyCurrentMaze();
+
+        maze.size = newSize;
+        maze.Generate();
+
+        playerCurrentCoords = newPlayerCoords;
+
+        Vector3 playerPos = maze.GetCellLocalPosition(newPlayerCoords.x, newPlayerCoords.z);
+        playerPos.y += 0.2f;
+
+        player.transform.localPosition = playerPos;
+
+        player.UnfreezePlayer();
+    }
+
+    private void SingleHallwayEnding() {
+        ResizeMaze(new IntVector2(1, 10), new IntVector2(0, 0));
+        aiAlignmentState = AIAlignmentState.VeryFriendly;
     }
 }

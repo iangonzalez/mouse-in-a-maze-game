@@ -79,6 +79,7 @@
   <ItemGroup>
     <Content Include="Assets\Resources\GameLines\beginning\first_request.txt" />
     <Content Include="Assets\Resources\GameLines\beginning\opening_monologue.txt" />
+    <Content Include="Assets\Resources\GameLines\reactions\VeryFriendly\TextFile1.txt" />
     <Content Include="Assets\Resources\GameLines\requests\first_request.txt" />
     <Content Include="Assets\Resources\GameLines\requests\request_intros.txt" />
     <Content Include="Assets\Resources\GameLines\requests\text_requests\Friendly\beast_request.txt" />
@@ -106,7 +107,7 @@
     <Content Include="Assets\Resources\GameLines\responses\negative\very_negative\responses.txt" />
     <Content Include="Assets\Resources\GameLines\responses\positive\first_response.txt" />
     <Content Include="Assets\Resources\GameLines\responses\positive\responses.txt" />
-    <Content Include="Assets\Resources\GameLines\ending\ending_monologue_standard.txt" />
+    <Content Include="Assets\Resources\GameLines\ending\Neutral\ending_monologue_standard.txt" />
     <Content Include="Assets\Resources\_scripts\Graph.dll" />
     <Content Include="Assets\Resources\_scripts\Graph.dll.mdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -169,8 +170,6 @@
     <None Include="Assets\Resources\prefabs\Wall.prefab" />
     <None Include="Assets\Resources\_scripts\Graph.vshost.exe.manifest" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Assets\Resources\GameLines\reactions\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2015\UnityVS.CSharp.targets" />
 </Project>

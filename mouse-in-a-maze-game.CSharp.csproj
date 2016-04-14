@@ -103,6 +103,7 @@
     <None Include="Assets\Resources\GameLines\beginning\first_request.txt" />
     <None Include="Assets\Resources\GameLines\beginning\opening_monologue.txt" />
     <None Include="Assets\Resources\GameLines\ending\Neutral\ending_monologue_standard.txt" />
+    <None Include="Assets\Resources\GameLines\reactions\VeryFriendly\TextFile1.txt" />
     <None Include="Assets\Resources\GameLines\requests\first_request.txt" />
     <None Include="Assets\Resources\GameLines\requests\request_intros.txt" />
     <None Include="Assets\Resources\GameLines\requests\text_requests\Friendly\beast_request.txt" />

@@ -30,14 +30,6 @@ public class GameManager : MonoBehaviour {
 	    if (Input.GetKeyDown(KeyCode.Z)) {
             SwitchCameraView();
         }
-        
-        //check if player has reached the end
-        if (playerInstance.InCell &&
-            playerInstance.MazeCellCoords.x == exitCellCoords.x &&
-            playerInstance.MazeCellCoords.z == exitCellCoords.z) {
-
-            EndGame();
-        }
 	}
 
     private void SwitchCameraView() {
