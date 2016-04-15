@@ -52,6 +52,8 @@ public class GameAI : MonoBehaviour {
 
     private bool reactToPlayer = false;
 
+    private bool gameOver = false;
+
     private void Start() {
 
         //init communcation channels 
@@ -174,7 +176,7 @@ public class GameAI : MonoBehaviour {
             perStateReactionList[state] = GetActionsByNameStart(aiMethods, stateName + "_Reaction_");
 
             //add reactions found in the GameLines folder for this state:
-            perStateReactionList[state].AddRange(CreateTextReactionActionList(stateName));
+            perStateReactionList[state].AddRange(CreateTextReactionActionList(stateName, (stateName != "VeryFriendly")));
         }
     }
     #endregion
@@ -220,13 +222,24 @@ public class GameAI : MonoBehaviour {
             //maze.CloseDoorsInCell(playerCurrentCoords);
             //InitiateEnding();
             //SingleHallwayEnding();
+            FlyoverMonologueEnding();
             //reactToPlayer = true;
             //ResizeMaze(new IntVector2(1, 10), new IntVector2(0, 0));
             //Friendly_Reaction_AddGridLocationsToWalls();
-            SendMessageToPlayer(GameLinesTextGetter.OpeningMonologue(), oneWayCommChannel);
+            //SendMessageToPlayer(GameLinesTextGetter.OpeningMonologue(), oneWayCommChannel);
         }
         else if (playerCurrentCoords != player.MazeCellCoords && 
                  DistanceBetweenPlayerAndRoom(player.MazeCellCoords) < 0.3) {
+
+            //for the single hallway ending. close doors behind you.
+            if (aiAlignmentState == AIAlignmentState.VeryFriendly) {
+                maze.CloseDoorsInCell(playerCurrentCoords);
+
+                if (player.MazeCellCoords.z == (maze.size.z - 1)) {
+                    Debug.Log("tryna quit");
+                    Application.Quit();
+                }
+            }
 
             playerCurrentCoords = player.MazeCellCoords;
             if (!firstInterchangeDone) {
@@ -236,7 +249,7 @@ public class GameAI : MonoBehaviour {
             else {
                 if (reactToPlayer) {
                     ExecuteRandomAction(perStateReactionList[aiAlignmentState]);
-                    reactToPlayer = false;
+                    reactToPlayer = (aiAlignmentState == AIAlignmentState.VeryFriendly);
                 }
                 else {
                     ExecuteRandomAction(perStateRequestActionList[aiAlignmentState]);
@@ -256,6 +269,10 @@ public class GameAI : MonoBehaviour {
         if (!openingDone) {
             openingDone = true;
             maze.OpenDoorsInCell(playerCurrentCoords);
+        }
+        if (gameOver) {
+            Debug.Log("ending game");
+            Application.Quit();
         }
 
 
@@ -288,7 +305,7 @@ public class GameAI : MonoBehaviour {
             aiAlignmentState = AIAlignmentState.Neutral;
         }
         else if (numberOfInfractions < -2) {
-            if (numberOfInfractions <= -5) {
+            if (numberOfInfractions <= -2) {
                 aiAlignmentState = AIAlignmentState.VeryFriendly;
                 SingleHallwayEnding();
             }
@@ -526,6 +543,8 @@ public class GameAI : MonoBehaviour {
 
         objectMover.MoveObjectStraightLine(player.gameObject, new Vector3(0, 2.0f, 0), 1f);
         objMoverTwo.SpinObject(player.gameObject, 7200f, 30f);
+
+        gameOver = true;
     }
 
     private void ResizeMaze(IntVector2 newSize, IntVector2 newPlayerCoords) {
@@ -549,5 +568,6 @@ public class GameAI : MonoBehaviour {
     private void SingleHallwayEnding() {
         ResizeMaze(new IntVector2(1, 10), new IntVector2(0, 0));
         aiAlignmentState = AIAlignmentState.VeryFriendly;
+        reactToPlayer = true;
     }
 }
