@@ -52,7 +52,7 @@ public class GameAI : MonoBehaviour {
 
     private bool reactToPlayer = false;
 
-    private bool gameOver = false;
+    public bool gameOver = false;
 
     private void Start() {
 
@@ -236,8 +236,7 @@ public class GameAI : MonoBehaviour {
                 maze.CloseDoorsInCell(playerCurrentCoords);
 
                 if (player.MazeCellCoords.z == (maze.size.z - 1)) {
-                    Debug.Log("tryna quit");
-                    Application.Quit();
+                    gameOver = true;
                 }
             }
 
@@ -269,10 +268,6 @@ public class GameAI : MonoBehaviour {
         if (!openingDone) {
             openingDone = true;
             maze.OpenDoorsInCell(playerCurrentCoords);
-        }
-        if (gameOver) {
-            Debug.Log("ending game");
-            Application.Quit();
         }
 
 
@@ -542,9 +537,11 @@ public class GameAI : MonoBehaviour {
         ObjectMover objMoverTwo = ObjectMover.CreateObjectMover();
 
         objectMover.MoveObjectStraightLine(player.gameObject, new Vector3(0, 2.0f, 0), 1f);
-        objMoverTwo.SpinObject(player.gameObject, 7200f, 30f);
 
-        gameOver = true;
+        Action<GameObject> setGameOverFlag = (obj => gameOver = true);
+        objMoverTwo.SpinObject(player.gameObject, 720f, 30f, setGameOverFlag);
+
+        maze.StartRandomizingMaze(2.0f);
     }
 
     private void ResizeMaze(IntVector2 newSize, IntVector2 newPlayerCoords) {

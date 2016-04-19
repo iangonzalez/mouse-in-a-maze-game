@@ -97,6 +97,7 @@
     <Compile Include="Assets\Resources\_scripts\Player\Player.cs" />
     <Compile Include="Assets\Resources\_scripts\Utils\GameLinesTextGetter.cs" />
     <Compile Include="Assets\Resources\_scripts\Utils\ObjectMover.cs" />
+    <Compile Include="Assets\Resources\_scripts\Utils\ScreenFader.cs" />
     <Compile Include="Assets\Resources\_scripts\Utils\ThreeState.cs" />
   </ItemGroup>
   <ItemGroup>

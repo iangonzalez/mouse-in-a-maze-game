@@ -473,6 +473,18 @@ public class Maze : MonoBehaviour {
     }
 
 
+    //fields and functions to cause the maze to go crazy and randomize at fixed intervals
+    private bool randomizeMazeAtInterval = false;
+    private float randomizeInterval = 1f;
+    private float amountOfRandomizeIntervalLeft;
+    public void StartRandomizingMaze(float interval) {
+        randomizeMazeAtInterval = true;
+        this.randomizeInterval = interval;
+        amountOfRandomizeIntervalLeft = interval;
+    }
+
+
+
     //fields and functions to lengthen the hallways
     private bool changeHallwayLength = false;
     private float newRoomSepDist = 0f;
@@ -507,6 +519,14 @@ public class Maze : MonoBehaviour {
                 player = null;
                 newRoomSepDist = 0;
             }
+        }
+        else if (randomizeMazeAtInterval) {
+            amountOfRandomizeIntervalLeft -= Time.deltaTime;
+            if (amountOfRandomizeIntervalLeft <= 0) {
+                DestroyCurrentMaze();
+                Generate();
+                amountOfRandomizeIntervalLeft = randomizeInterval;
+            }       
         }
     }
 }

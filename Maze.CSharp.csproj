@@ -155,6 +155,7 @@
     <Compile Include="Assets\Resources\_scripts\AI\CommunicationChannels\TextCommunicationChannel.cs" />
     <Compile Include="Assets\Resources\_scripts\Utils\GameLinesTextGetter.cs" />
     <Compile Include="Assets\Resources\_scripts\Utils\ObjectMover.cs" />
+    <Compile Include="Assets\Resources\_scripts\Utils\ScreenFader.cs" />
     <Compile Include="Assets\Resources\_scripts\Utils\ThreeState.cs" />
   </ItemGroup>
   <ItemGroup>

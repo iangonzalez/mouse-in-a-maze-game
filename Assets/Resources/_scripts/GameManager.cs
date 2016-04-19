@@ -8,9 +8,9 @@ public class GameManager : MonoBehaviour {
     public GameAI gameAiPrefab;
     public TextCommunicationChannel commChannel;
 
-    private Maze mazeInstance;
-    private Player playerInstance;
-    private GameAI gameAiInstance;
+    private Maze mazeInstance = null;
+    private Player playerInstance = null;
+    private GameAI gameAiInstance = null;
     private TextCommunicationChannel commChannelInstance;
     private Camera mainCam;
 
@@ -19,16 +19,30 @@ public class GameManager : MonoBehaviour {
     public Text aiText;
     public InputField playerWordBox;
 
+    private ScreenFader screenFader;
+
 	// Use this for initialization
 	private void Start () {
         mainCam = GetComponentInChildren<Camera>();
         BeginGame();
-	}
+        screenFader = GetComponentInChildren<ScreenFader>();
+    }
 	
 	// Update is called once per frame
 	private void Update () {
 	    if (Input.GetKeyDown(KeyCode.Z)) {
             SwitchCameraView();
+        }
+
+        if (gameAiInstance != null && gameAiInstance.gameOver) {
+            if (screenFader != null) {
+                if (screenFader.enabled == false) {
+                    screenFader.FadeScreenToBlack();
+                }
+                else if (screenFader.doneFading) {
+                    Application.Quit();
+                }   
+            }
         }
 	}
 
