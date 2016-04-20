@@ -1,0 +1,8 @@
+﻿Do you accept my offer?
+%%
+yes
+%%
+Good. Come here. Look upon my face.
+%%
+Wrong answer.
+Get a good long look at your coffin, test subject 34992.

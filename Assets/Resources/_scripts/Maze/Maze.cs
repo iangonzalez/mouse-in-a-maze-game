@@ -54,18 +54,24 @@ public class Maze : MonoBehaviour {
     /// created on nodes and maze doors / hallways on edges.
     /// </summary>     
     public void Generate() {
-        if (transform.localScale != new Vector3(1f,1f,1f)) {
-            transform.localScale = new Vector3(1f, 1f, 1f);
-        }
-
 
         MazeGrid = new GridGraph(size.x, size.z);
         cells = new MazeCell[MazeGrid.x, MazeGrid.y];
-        MazeDirection[] dirs = new MazeDirection[] { MazeDirection.North, MazeDirection.South, MazeDirection.East, MazeDirection.West };
+        
 
         //turn the grid graph into a spanning tree of the same nodes
         MazeGrid.RandomizedKruskals();
 
+        CreateAllCellsAndHallwaysBasedOnGraph();
+        
+    }
+
+    private void CreateAllCellsAndHallwaysBasedOnGraph() {
+        if (transform.localScale != new Vector3(1f, 1f, 1f)) {
+            transform.localScale = new Vector3(1f, 1f, 1f);
+        }
+
+        MazeDirection[] dirs = new MazeDirection[] { MazeDirection.North, MazeDirection.South, MazeDirection.East, MazeDirection.West };
 
         //a cell will exist at each node
         for (int i = 0; i < MazeGrid.x; i++) {
@@ -94,20 +100,19 @@ public class Maze : MonoBehaviour {
                     }
                     else {
                         CreateWall(cells[i, j], null, dir);
-                    }                 
+                    }
                 }
             }
         }
 
         //loop through edges and create hallways
-        foreach (var e in MazeGrid.edgeList) {            
+        foreach (var e in MazeGrid.edgeList) {
             CreateHallway(e);
         }
 
         //make the maze bigger or smaller as desired
         transform.localScale = new Vector3(MazeScale, MazeScale, MazeScale);
-        
-        
+
     }
 
     public void DestroyCurrentMaze() {
@@ -233,6 +238,14 @@ public class Maze : MonoBehaviour {
         playerPos.y += 0.2f;
 
         player.MovePlayerToPosition(playerPos);
+
+        //rotate player towards door
+        MazeDirection[] dirs = new MazeDirection[] { MazeDirection.North, MazeDirection.South, MazeDirection.East, MazeDirection.West };
+        foreach (var dir in dirs) {
+            if (cells[coords.x, coords.z].GetEdge(dir).GetType() == typeof(MazeDoor)) {
+                player.transform.Rotate(dir.ToRotation().eulerAngles);
+            }
+        }
 
         return coords;        
     }
@@ -472,6 +485,25 @@ public class Maze : MonoBehaviour {
         }
     }
 
+    public void GenerateCircleMaze() {
+        MazeGrid.RemoveEdgesByCondition(new Func<GraphEdge, bool> (e => true));
+
+        foreach (int i in new List<int> { 0, size.x - 1 }) {
+            for (int j = 0; j < size.z - 1; j++) {
+                MazeGrid.CreateEdge(MazeGrid.grid[i, j], MazeGrid.grid[i, j+1]);
+            }
+        }
+
+        foreach (int j in new List<int> { 0, size.z - 1 }) {
+            for (int i = 0; i < size.x - 1; i++) {
+                MazeGrid.CreateEdge(MazeGrid.grid[i, j], MazeGrid.grid[i + 1, j]);
+            }
+        }
+
+        CreateAllCellsAndHallwaysBasedOnGraph();
+        
+    }
+
 
     //fields and functions to cause the maze to go crazy and randomize at fixed intervals
     private bool randomizeMazeAtInterval = false;
@@ -495,6 +527,7 @@ public class Maze : MonoBehaviour {
         this.player = player;
     }
 
+    //Update func will randomize the maze or change the hallway length if those flags are active
     void Update() {
         if (changeHallwayLength && (newRoomSepDist > RoomSeparationDistance)) {
             RoomSeparationDistance += 0.1f;

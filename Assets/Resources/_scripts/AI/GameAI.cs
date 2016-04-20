@@ -176,7 +176,8 @@ public class GameAI : MonoBehaviour {
             perStateReactionList[state] = GetActionsByNameStart(aiMethods, stateName + "_Reaction_");
 
             //add reactions found in the GameLines folder for this state:
-            perStateReactionList[state].AddRange(CreateTextReactionActionList(stateName, (stateName != "VeryFriendly")));
+            bool randomize = (!stateName.StartsWith("Very"));
+            perStateReactionList[state].AddRange(CreateTextReactionActionList(stateName, randomize));
         }
     }
     #endregion
@@ -219,44 +220,45 @@ public class GameAI : MonoBehaviour {
             }
         }
         else if (!openingDone) {
-            //maze.CloseDoorsInCell(playerCurrentCoords);
-            //InitiateEnding();
-            //SingleHallwayEnding();
-            FlyoverMonologueEnding();
-            //reactToPlayer = true;
-            //ResizeMaze(new IntVector2(1, 10), new IntVector2(0, 0));
-            //Friendly_Reaction_AddGridLocationsToWalls();
-            //SendMessageToPlayer(GameLinesTextGetter.OpeningMonologue(), oneWayCommChannel);
+            maze.CloseDoorsInCell(playerCurrentCoords);
+            SendMessageToPlayer(GameLinesTextGetter.OpeningMonologue(), oneWayCommChannel);
         }
         else if (playerCurrentCoords != player.MazeCellCoords && 
                  DistanceBetweenPlayerAndRoom(player.MazeCellCoords) < 0.3) {
 
+            //neutral ending. ends on reaching the ladder
+            if (player.MazeCellCoords == maze.exitCoords) {
+                FlyoverMonologueEnding();
+            }
             //for the single hallway ending. close doors behind you.
-            if (aiAlignmentState == AIAlignmentState.VeryFriendly) {
+            else if (aiAlignmentState == AIAlignmentState.VeryFriendly) {
                 maze.CloseDoorsInCell(playerCurrentCoords);
 
                 if (player.MazeCellCoords.z == (maze.size.z - 1)) {
                     gameOver = true;
                 }
             }
-
-            playerCurrentCoords = player.MazeCellCoords;
-            if (!firstInterchangeDone) {
-                Neutral_Request_AskPlayerToTouchCorners();
-                firstInterchangeDone = true;
-            }
+            //the standard case. do a reaction or request
             else {
-                if (reactToPlayer) {
-                    ExecuteRandomAction(perStateReactionList[aiAlignmentState]);
-                    reactToPlayer = (aiAlignmentState == AIAlignmentState.VeryFriendly);
+                playerCurrentCoords = player.MazeCellCoords;
+                if (!firstInterchangeDone) {
+                    Neutral_Request_AskPlayerToTouchCorners();
+                    firstInterchangeDone = true;
                 }
                 else {
-                    ExecuteRandomAction(perStateRequestActionList[aiAlignmentState]);
+                    if (reactToPlayer && aiAlignmentState != AIAlignmentState.VeryHostile) {
+                        ExecuteRandomAction(perStateReactionList[aiAlignmentState]);
+                        reactToPlayer = (aiAlignmentState.ToString().StartsWith("Very")) &&
+                            perStateReactionList[aiAlignmentState].Count > 0;
+                    }
+                    else {
+                        ExecuteRandomAction(perStateRequestActionList[aiAlignmentState]);
 
-                    //on occasion, prompt a reaction from the AI on the next room
-                    reactToPlayer = (UnityEngine.Random.Range(0, 1f) < 0.75f);
+                        //on occasion, prompt a reaction from the AI on the next room
+                        reactToPlayer = (UnityEngine.Random.Range(0, 1f) < 0.75f);
+                    }
                 }
-            }
+            }            
         }
     }
 
@@ -286,9 +288,24 @@ public class GameAI : MonoBehaviour {
             string responseText = currentInterchange.GetResponseToPlayerText(wasResponseCorrect.ToBool());
             SendMessageToPlayer(responseText, oneWayCommChannel);
 
-            if (wasResponseCorrect != ThreeState.Neutral) {
+            //ending condition for veryhostile
+            if (aiAlignmentState == AIAlignmentState.VeryHostile) {
+                
+                if (wasResponseCorrect == ThreeState.True) {
+                    AscendPlayer();
+                    gameOver = true;
+                }
+                else {
+                    ReduceMazeToOneRoom();
+
+                }
+            }
+            //otherwise do state transition if need be
+            else if (wasResponseCorrect != ThreeState.Neutral && 
+                !aiAlignmentState.ToString().StartsWith("Very")) {
                 StateTransition(wasResponseCorrect.ToBool());
             }
+            
             //reset current interchange to get caught by above conditional.
             currentInterchange = null;
         }
@@ -300,7 +317,7 @@ public class GameAI : MonoBehaviour {
             aiAlignmentState = AIAlignmentState.Neutral;
         }
         else if (numberOfInfractions < -2) {
-            if (numberOfInfractions <= -2) {
+            if (numberOfInfractions <= -5) {
                 aiAlignmentState = AIAlignmentState.VeryFriendly;
                 SingleHallwayEnding();
             }
@@ -310,7 +327,13 @@ public class GameAI : MonoBehaviour {
             
         }
         else if (numberOfInfractions > 2) {
-            aiAlignmentState = AIAlignmentState.Hostile;
+            if (numberOfInfractions >= 5) {
+                aiAlignmentState = AIAlignmentState.VeryHostile;
+                CircleMazeEnding();
+            }
+            else {
+                aiAlignmentState = AIAlignmentState.Hostile;
+            }
         }
         
     }
@@ -544,13 +567,24 @@ public class GameAI : MonoBehaviour {
         maze.StartRandomizingMaze(2.0f);
     }
 
-    private void ResizeMaze(IntVector2 newSize, IntVector2 newPlayerCoords) {
+    //resize the maze and place the player in it.
+    //optional parameter mazeGen allows caller to define how the maze will be generated after being destroyed
+    //(defaults to maze.Generate())
+    private void ResizeMaze(IntVector2 newSize, IntVector2 newPlayerCoords, Action<Maze> mazeGen = null) {
         
         player.FreezePlayer();
         maze.DestroyCurrentMaze();
 
         maze.size = newSize;
-        maze.Generate();
+
+        //generate the maze
+        if (mazeGen == null) {
+            maze.Generate();
+        }
+        else {
+            mazeGen(maze);
+        }
+        
 
         playerCurrentCoords = newPlayerCoords;
 
@@ -567,4 +601,21 @@ public class GameAI : MonoBehaviour {
         aiAlignmentState = AIAlignmentState.VeryFriendly;
         reactToPlayer = true;
     }
-}
+
+    private void CircleMazeEnding() {
+        ResizeMaze(new IntVector2(3, 3), new IntVector2(0, 0), new Action<Maze>(m => m.GenerateCircleMaze()));
+        aiAlignmentState = AIAlignmentState.VeryHostile;
+        reactToPlayer = true;
+    }
+
+    private void AscendPlayer() {
+        objectMover.MoveObjectStraightLine(player.gameObject, 
+            player.gameObject.transform.localPosition + new Vector3(0, 20f, 0),
+            1f);
+    }
+
+    private void ReduceMazeToOneRoom() {
+        ResizeMaze(new IntVector2(1, 1), new IntVector2(0,0));
+        objectMover.SpinObject(player.gameObject, 720f, 50f, new Action<GameObject>(obj => gameOver = true));
+    }
+} 

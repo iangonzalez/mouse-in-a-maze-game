@@ -1,0 +1,3 @@
+﻿Are you starting to panic yet?
+People will often start to panic at this point in the maze.
+My observations have shown that panic is not conducive to solving the maze quickly.

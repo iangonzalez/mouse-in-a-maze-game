@@ -1,0 +1,2 @@
+﻿Fun fact about the maze:
+The number of rooms is actually a perfect square.
