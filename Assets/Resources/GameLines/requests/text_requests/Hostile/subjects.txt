@@ -1,0 +1,14 @@
+﻿Look. Let me explain this to you.
+Scientists order. And subjects obey.
+It's even in the word "subject". Like a king's subject
+Do you understand? Tell me you understand.
+%%
+I understand.|I understand|yes|yeah|yes.|yeah.|Understood|Understood.
+%%
+Good! Phew.
+I thought I was going crazy over here.
+%%
+Can you...Can you just...
+Work with me here?
+Because this isn't working.
+I'm not sure how to make things clear to you.

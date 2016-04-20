@@ -1,0 +1,14 @@
+﻿A slight modification has to be made to the study.
+As it turns out, you didn't get the right series of injections before we started.
+Will you sign a consent form so we can get down there and make things right?
+A simple yes will do.
+
+%%
+yes|yeah|yes.|yeah.|yes!|yeah!
+%%
+Great, the needle is injecting you from behind your head now.
+All set!
+%%
+What, do you want more information or something?
+It's just a chemical.
+Most chemicals aren't even carcinogenic.

@@ -165,15 +165,17 @@ public class GameAI : MonoBehaviour {
         foreach (AIAlignmentState state in Enum.GetValues(typeof(AIAlignmentState))) {
             string stateName = state.ToString();
 
-            //add the request methods to the list for request methods for each state
+            //add the request methods twice to the list for request methods for each state
             perStateRequestActionList[state] = GetActionsByNameStart(aiMethods, stateName + "_Request_");
+            perStateRequestActionList[state].AddRange(perStateRequestActionList[state]);
 
             //add the generic text requests found in the GameLines folder for this state as actions:
             perStateRequestActionList[state].AddRange(CreateTextRequestActionList(stateName));            
             
 
-            //add the reaction methods to the list for reaction methods for each state
+            //add the reaction methods twice to the list for reaction methods for each state
             perStateReactionList[state] = GetActionsByNameStart(aiMethods, stateName + "_Reaction_");
+            perStateReactionList[state].AddRange(perStateReactionList[state]);
 
             //add reactions found in the GameLines folder for this state:
             bool randomize = (!stateName.StartsWith("Very"));

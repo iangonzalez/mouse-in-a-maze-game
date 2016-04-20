@@ -1,0 +1,17 @@
+﻿Some bad news.
+I had to cut your monetary compensation waiting for you at the end of all this.
+To zero.
+Last minute funding woes. You know how it is.
+Anyway, we're going to need to get you on record saying you're an unpaid volunteer.
+You know how it is.
+So...are you an unpaid volunteer?
+
+%%
+yes|yeah|yes.|yeah.|yes!|yeah!
+%%
+Thank you for confirming, test subject 34992!
+You're really helping me out here.
+%%
+You're that greedy, huh?
+Don't you believe in science? In progress?
+Don't answer. I'm not sure that I want to hear your answer.
