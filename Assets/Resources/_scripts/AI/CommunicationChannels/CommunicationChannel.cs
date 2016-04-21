@@ -10,6 +10,7 @@ public abstract class CommunicationChannel : MonoBehaviour {
     public GameObject gameCanvas;
     public Text aiTextBoxPrefab;
     public InputField playerWordBoxPrefab;
+    public Image aiTextBackdrop;
 
     protected GameAI ai;
     protected Player player;
@@ -17,6 +18,7 @@ public abstract class CommunicationChannel : MonoBehaviour {
     protected Text aiTextBox = null;
     protected Text continueTextBox = null;
     protected InputField playerWordBox = null;
+    protected Image aiTextBackInst = null;
 
     //internally track whether the communcation has finished
     protected bool commComplete = false;
@@ -48,8 +50,13 @@ public abstract class CommunicationChannel : MonoBehaviour {
     /// </summary>
     /// <param name="withPlayerWordBox"></param>
     protected void CreateTextBoxes(bool withPlayerWordBox = true, bool withContinuePrompt = true) {
+
+        aiTextBackInst = Instantiate(aiTextBackdrop) as Image;
+        aiTextBackInst.transform.SetParent(gameCanvas.transform, false);
+
         aiTextBox = Instantiate(aiTextBoxPrefab) as Text;
         aiTextBox.transform.SetParent(gameCanvas.transform, false);
+        
 
         if (withContinuePrompt) {
             continueTextBox = (Instantiate(Resources.Load("prefabs/ContinueText")) as GameObject).GetComponent<Text>();
@@ -63,7 +70,6 @@ public abstract class CommunicationChannel : MonoBehaviour {
             playerWordBox = Instantiate(playerWordBoxPrefab) as InputField;
             playerWordBox.transform.SetParent(gameCanvas.transform, false);
         }
-        
     }
 
     /// <summary>
@@ -80,6 +86,10 @@ public abstract class CommunicationChannel : MonoBehaviour {
 
         if (aiTextBox != null) {
             DestroyObject(aiTextBox.gameObject);
+        }
+
+        if (aiTextBackInst != null) {
+            DestroyObject(aiTextBackInst.gameObject);
         }
     }
 

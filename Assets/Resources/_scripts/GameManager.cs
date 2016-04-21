@@ -8,6 +8,8 @@ public class GameManager : MonoBehaviour {
     public GameAI gameAiPrefab;
     public TextCommunicationChannel commChannel;
 
+    public Text instructionText;
+
     private Maze mazeInstance = null;
     private Player playerInstance = null;
     private GameAI gameAiInstance = null;
@@ -30,8 +32,11 @@ public class GameManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	private void Update () {
-	    if (Input.GetKeyDown(KeyCode.Z)) {
-            SwitchCameraView();
+	    if (Input.GetKeyDown(KeyCode.Escape)) {
+            Application.Quit();
+        }
+        else if (Input.GetKeyDown(KeyCode.I)) {
+            instructionText.enabled = !instructionText.enabled;
         }
 
         if (gameAiInstance != null && gameAiInstance.gameOver) {

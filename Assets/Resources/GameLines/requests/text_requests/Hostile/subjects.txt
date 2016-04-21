@@ -1,6 +1,6 @@
 ﻿Look. Let me explain this to you.
 Scientists order. And subjects obey.
-It's even in the word "subject". Like a king's subject
+It's even in the word "subject". Like a king's subject.
 Do you understand? Tell me you understand.
 %%
 I understand.|I understand|yes|yeah|yes.|yeah.|Understood|Understood.

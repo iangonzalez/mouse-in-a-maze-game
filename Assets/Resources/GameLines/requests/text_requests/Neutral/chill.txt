@@ -2,9 +2,8 @@
 You seem like the quiet, brooding type.
 Are we chill?
 Tell me we chill.
-
 %%
-we chill|we chill.|chill|yes|we are|we are.|
+we chill|we chill.|chill|yes|we are|we are.
 %%
 Phew.
 %%

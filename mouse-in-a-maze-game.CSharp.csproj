@@ -137,11 +137,16 @@
     <None Include="Assets\Resources\GameLines\requests\text_requests\Friendly\beast_request.txt" />
     <None Include="Assets\Resources\GameLines\requests\text_requests\Friendly\do_you_like_me.txt" />
     <None Include="Assets\Resources\GameLines\requests\text_requests\Friendly\good_boy.txt" />
+    <None Include="Assets\Resources\GameLines\requests\text_requests\Friendly\injection.txt" />
+    <None Include="Assets\Resources\GameLines\requests\text_requests\Friendly\liver.txt" />
+    <None Include="Assets\Resources\GameLines\requests\text_requests\Friendly\money.txt" />
     <None Include="Assets\Resources\GameLines\requests\text_requests\Friendly\moral_request.txt" />
     <None Include="Assets\Resources\GameLines\requests\text_requests\Hostile\counting.txt" />
     <None Include="Assets\Resources\GameLines\requests\text_requests\Hostile\five_step.txt" />
+    <None Include="Assets\Resources\GameLines\requests\text_requests\Hostile\material_gain.txt" />
     <None Include="Assets\Resources\GameLines\requests\text_requests\Hostile\meme_humor.txt" />
     <None Include="Assets\Resources\GameLines\requests\text_requests\Hostile\string_req.txt" />
+    <None Include="Assets\Resources\GameLines\requests\text_requests\Hostile\subjects.txt" />
     <None Include="Assets\Resources\GameLines\requests\text_requests\Hostile\time_running_out.txt" />
     <None Include="Assets\Resources\GameLines\requests\text_requests\Neutral\chill.txt" />
     <None Include="Assets\Resources\GameLines\requests\text_requests\Neutral\do_you_like_me.txt" />

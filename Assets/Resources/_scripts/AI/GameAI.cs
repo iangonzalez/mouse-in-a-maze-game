@@ -92,9 +92,12 @@ public class GameAI : MonoBehaviour {
     }
 
     //helper function to combine the above 2 and add any extra needed actions to the list (only null action right now)
-    private List<Action> GetActionsByNameStart(IEnumerable<MethodInfo> methodInfos, string nameStart) {
+    private List<Action> GetActionsByNameStart(IEnumerable<MethodInfo> methodInfos, string nameStart, 
+                                                bool addNullAction = true) {
         var actions = GetActionListFromMethodInfos(FilterMethodInfosByNameStart(methodInfos, nameStart));
-        actions.Add(NullAction);
+        if (addNullAction) {
+            actions.Add(NullAction);
+        }
         return actions;
     }
 
@@ -164,18 +167,26 @@ public class GameAI : MonoBehaviour {
         
         foreach (AIAlignmentState state in Enum.GetValues(typeof(AIAlignmentState))) {
             string stateName = state.ToString();
+            bool addNullAction = !stateName.StartsWith("Very");
 
             //add the request methods twice to the list for request methods for each state
-            perStateRequestActionList[state] = GetActionsByNameStart(aiMethods, stateName + "_Request_");
-            perStateRequestActionList[state].AddRange(perStateRequestActionList[state]);
+            perStateRequestActionList[state] = GetActionsByNameStart(aiMethods, stateName + "_Request_", addNullAction);
+
+            for (int i = 0; i < 2; i++) {
+                perStateRequestActionList[state].AddRange(GetActionsByNameStart(aiMethods, stateName + "_Request_", addNullAction));
+            }
 
             //add the generic text requests found in the GameLines folder for this state as actions:
             perStateRequestActionList[state].AddRange(CreateTextRequestActionList(stateName));            
             
 
             //add the reaction methods twice to the list for reaction methods for each state
-            perStateReactionList[state] = GetActionsByNameStart(aiMethods, stateName + "_Reaction_");
-            perStateReactionList[state].AddRange(perStateReactionList[state]);
+            perStateReactionList[state] = GetActionsByNameStart(aiMethods, stateName + "_Reaction_", addNullAction);
+
+            for (int i = 0; i < 2; i++) {
+                perStateReactionList[state].AddRange(GetActionsByNameStart(aiMethods, stateName + "_Reaction_", addNullAction));
+            } 
+            
 
             //add reactions found in the GameLines folder for this state:
             bool randomize = (!stateName.StartsWith("Very"));
@@ -229,26 +240,31 @@ public class GameAI : MonoBehaviour {
                  DistanceBetweenPlayerAndRoom(player.MazeCellCoords) < 0.3) {
 
             //neutral ending. ends on reaching the ladder
-            if (player.MazeCellCoords == maze.exitCoords) {
+            if (player.MazeCellCoords == maze.exitCoords && !aiAlignmentState.ToString().StartsWith("Very")) {
                 FlyoverMonologueEnding();
             }
-            //for the single hallway ending. close doors behind you.
-            else if (aiAlignmentState == AIAlignmentState.VeryFriendly) {
-                maze.CloseDoorsInCell(playerCurrentCoords);
-
-                if (player.MazeCellCoords.z == (maze.size.z - 1)) {
-                    gameOver = true;
-                }
+            //very friendly ending. end condition on the last room
+            else if (aiAlignmentState == AIAlignmentState.VeryFriendly 
+                      && player.MazeCellCoords.z == (maze.size.z - 1)) {
+                maze.TurnAllLightsRed();
+                maze.CloseDoorsInCell(player.MazeCellCoords);
+                gameOver = true;
             }
             //the standard case. do a reaction or request
             else {
+                //for the single hallway ending. close doors behind you.
+                if (aiAlignmentState == AIAlignmentState.VeryFriendly) {
+                    maze.CloseDoorsInCell(playerCurrentCoords);
+                    
+                }
+
                 playerCurrentCoords = player.MazeCellCoords;
                 if (!firstInterchangeDone) {
                     Neutral_Request_AskPlayerToTouchCorners();
                     firstInterchangeDone = true;
                 }
                 else {
-                    if (reactToPlayer && aiAlignmentState != AIAlignmentState.VeryHostile) {
+                    if (reactToPlayer) {
                         ExecuteRandomAction(perStateReactionList[aiAlignmentState]);
                         reactToPlayer = (aiAlignmentState.ToString().StartsWith("Very")) &&
                             perStateReactionList[aiAlignmentState].Count > 0;
@@ -319,7 +335,7 @@ public class GameAI : MonoBehaviour {
             aiAlignmentState = AIAlignmentState.Neutral;
         }
         else if (numberOfInfractions < -2) {
-            if (numberOfInfractions <= -5) {
+            if (numberOfInfractions <= -6) {
                 aiAlignmentState = AIAlignmentState.VeryFriendly;
                 SingleHallwayEnding();
             }
@@ -329,7 +345,7 @@ public class GameAI : MonoBehaviour {
             
         }
         else if (numberOfInfractions > 2) {
-            if (numberOfInfractions >= 5) {
+            if (numberOfInfractions >= 6) {
                 aiAlignmentState = AIAlignmentState.VeryHostile;
                 CircleMazeEnding();
             }
@@ -553,6 +569,11 @@ public class GameAI : MonoBehaviour {
 
     #endregion
 
+
+    //This region contains code for ending the game.
+    //There are currently 3 types of endings the AI can initiate.
+    #region
+
     //start off the end of the game. ending changes depending on ai state.
     private void FlyoverMonologueEnding() {
         maze.CloseDoorsInCell(playerCurrentCoords);
@@ -564,7 +585,7 @@ public class GameAI : MonoBehaviour {
         objectMover.MoveObjectStraightLine(player.gameObject, new Vector3(0, 2.0f, 0), 1f);
 
         Action<GameObject> setGameOverFlag = (obj => gameOver = true);
-        objMoverTwo.SpinObject(player.gameObject, 720f, 30f, setGameOverFlag);
+        objMoverTwo.SpinObject(player.gameObject, 600f, 30f, setGameOverFlag);
 
         maze.StartRandomizingMaze(2.0f);
     }
@@ -620,4 +641,6 @@ public class GameAI : MonoBehaviour {
         ResizeMaze(new IntVector2(1, 1), new IntVector2(0,0));
         objectMover.SpinObject(player.gameObject, 720f, 50f, new Action<GameObject>(obj => gameOver = true));
     }
-} 
+
+    #endregion
+}
