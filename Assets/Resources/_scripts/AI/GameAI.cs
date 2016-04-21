@@ -54,6 +54,8 @@ public class GameAI : MonoBehaviour {
 
     public bool gameOver = false;
 
+    private Dictionary<IntVector2, bool> roomsRequestedIn;
+
     private void Start() {
 
         //init communcation channels 
@@ -74,6 +76,8 @@ public class GameAI : MonoBehaviour {
 
         //initialize list of possible actions (for each state)
         InitializeActionLists();
+
+        roomsRequestedIn = new Dictionary<IntVector2, bool>();
 
         rng = new System.Random();
     }
@@ -266,12 +270,17 @@ public class GameAI : MonoBehaviour {
                 else {
                     if (reactToPlayer) {
                         ExecuteRandomAction(perStateReactionList[aiAlignmentState]);
+
+                        //react to player next time only if VeryHostile, VeryFriendly and there are reactions left
                         reactToPlayer = (aiAlignmentState.ToString().StartsWith("Very")) &&
                             perStateReactionList[aiAlignmentState].Count > 0;
                     }
                     else {
-                        ExecuteRandomAction(perStateRequestActionList[aiAlignmentState]);
-
+                        if (!roomsRequestedIn.ContainsKey(playerCurrentCoords)) {
+                            ExecuteRandomAction(perStateRequestActionList[aiAlignmentState]);
+                            roomsRequestedIn[playerCurrentCoords] = true;
+                        }
+                        
                         //on occasion, prompt a reaction from the AI on the next room
                         reactToPlayer = (UnityEngine.Random.Range(0, 1f) < 0.75f);
                     }
@@ -617,6 +626,9 @@ public class GameAI : MonoBehaviour {
         player.transform.localPosition = playerPos;
 
         player.UnfreezePlayer();
+
+        //reset the rooms requested in dict
+        roomsRequestedIn = new Dictionary<IntVector2, bool>();
     }
 
     private void SingleHallwayEnding() {
