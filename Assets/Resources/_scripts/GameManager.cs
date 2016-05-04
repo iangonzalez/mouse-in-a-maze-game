@@ -35,6 +35,9 @@ public class GameManager : MonoBehaviour {
 	    if (Input.GetKeyDown(KeyCode.Escape)) {
             Application.Quit();
         }
+        else if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift)) {
+            RestartGame();
+        }
         else if (Input.GetKeyDown(KeyCode.I)) {
             instructionText.enabled = !instructionText.enabled;
         }
@@ -81,6 +84,7 @@ public class GameManager : MonoBehaviour {
 
     private void RestartGame() {
         StopAllCoroutines();
+        gameAiInstance.HaltAllActivityAndSelfDestruct();
         Destroy(mazeInstance.gameObject);
         Destroy(playerInstance.gameObject);
         BeginGame();

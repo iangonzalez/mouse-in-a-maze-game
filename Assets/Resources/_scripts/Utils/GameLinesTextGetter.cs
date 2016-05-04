@@ -17,13 +17,6 @@ public static class GameLinesTextGetter {
         return lines;
     }
 
-    public static IEnumerable<string> GetFileNames(string subpath) {
-        DirectoryInfo relevantDir = new DirectoryInfo(Application.dataPath + "/Resources/" + linesDirectory + subpath);
-        foreach (FileInfo file in relevantDir.GetFiles()) {
-            yield return file.Name;
-        }
-    }
-
     public static IEnumerable<GenericTextInterchange> ParseAllTextInterchangesInDir(string subpath) {
         foreach (string text in GetAllTextInDir(subpath)) {
             if (text != null) {
@@ -40,6 +33,7 @@ public static class GameLinesTextGetter {
         string[] interchangePieces = text.Split(new string[] { "%%" + Environment.NewLine }, StringSplitOptions.None);
 
         if (interchangePieces.Length != 4) {
+            Debug.LogError("The generic text interchange was not parsed correctly from the text: " + text);
             return null;
         }
 
@@ -56,7 +50,7 @@ public static class GameLinesTextGetter {
         }
 
 
-        getAiResponse = (b) =>  (b ? interchangePieces[2] : interchangePieces[3]);
+        getAiResponse = (b) => (b ? interchangePieces[2] : interchangePieces[3]);
 
         GenericTextInterchange interchange = new GenericTextInterchange(AIAlignmentState.Neutral);
 

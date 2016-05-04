@@ -30,7 +30,6 @@ public class GameAI : MonoBehaviour {
 
     private ObjectMover objectMover;
 
-    private string receivedPlayerMessage;
     private IntVector2 playerCurrentCoords;
 
     private AICommunicationState aiCommState;
@@ -225,11 +224,13 @@ public class GameAI : MonoBehaviour {
     private void Update() {
         //if in communcation, check for response, call handler on response if there
         if (aiCommState == AICommunicationState.InCommunication) {
-            if (currentCommChannel.IsResponseReceived()) {
+            if (currentCommChannel != null && currentCommChannel.IsResponseReceived()) {
                 playerResponse = currentCommChannel.GetResponse();
 
                 //end communcation and reset state
                 currentCommChannel.EndCommuncation();
+                currentCommChannel = null;
+
                 aiCommState = AICommunicationState.NotInCommuncation;
 
                 //handle whatever the response was
@@ -237,11 +238,12 @@ public class GameAI : MonoBehaviour {
             }
         }
         else if (!openingDone) {
+            Debug.LogError("about to close doors in cell opening");
             maze.CloseDoorsInCell(playerCurrentCoords);
             SendMessageToPlayer(GameLinesTextGetter.OpeningMonologue(), oneWayCommChannel);
         }
         else if (playerCurrentCoords != player.MazeCellCoords && 
-                 DistanceBetweenPlayerAndRoom(player.MazeCellCoords) < 0.3) {
+                 DistanceBetweenPlayerAndRoom(player.MazeCellCoords) < 0.4) {
 
             //neutral ending. ends on reaching the ladder
             if (player.MazeCellCoords == maze.exitCoords && !aiAlignmentState.ToString().StartsWith("Very")) {
@@ -251,6 +253,8 @@ public class GameAI : MonoBehaviour {
             else if (aiAlignmentState == AIAlignmentState.VeryFriendly 
                       && player.MazeCellCoords.z == (maze.size.z - 1)) {
                 maze.TurnAllLightsRed();
+
+                Debug.LogError("about to close doors in cell friendlyending");
                 maze.CloseDoorsInCell(player.MazeCellCoords);
                 gameOver = true;
             }
@@ -258,6 +262,7 @@ public class GameAI : MonoBehaviour {
             else {
                 //for the single hallway ending. close doors behind you.
                 if (aiAlignmentState == AIAlignmentState.VeryFriendly) {
+                    Debug.LogError("about to close doors in cell friendlyending close behind");
                     maze.CloseDoorsInCell(playerCurrentCoords);
                     
                 }
@@ -410,6 +415,12 @@ public class GameAI : MonoBehaviour {
     /// </summary>
     /// <param name="interchange"></param>
     private void ExecTextInterchange(GenericTextInterchange interchange) {
+        if (interchange == null) {
+            Debug.LogError("interchange was null in ExecTextInterchange");
+            return;
+        }
+
+        Debug.LogError("about to close doors in cell exectextinterchange");
         maze.CloseDoorsInCell(playerCurrentCoords);
 
         currentInterchange = interchange;
@@ -439,6 +450,7 @@ public class GameAI : MonoBehaviour {
     }
 
     private void Neutral_Request_AskPlayerToStandStill() {
+        Debug.LogError("about to close doors in cell standstill");
         maze.CloseDoorsInCell(playerCurrentCoords);
         currentInterchange = new StayStillInterchange(aiAlignmentState);
         SendMessageToPlayer(currentInterchange.GetQuestionText(), stillnessTimedComm);
@@ -451,6 +463,7 @@ public class GameAI : MonoBehaviour {
     #region
 
     private void Hostile_Request_LockPlayerInRoom() {
+        Debug.LogError("about to close doors in cell LockPlayerInRoom");
         maze.CloseDoorsInCell(playerCurrentCoords);
         var interchange = new LockPlayerInRoomInterchange(aiAlignmentState);
         interchange.timeLocked = 5.0f;
@@ -489,6 +502,7 @@ public class GameAI : MonoBehaviour {
         maze.ChangeHallwayLength(maze.RoomSeparationDistance + 3.0f, player);
     }
 
+    //TODO: Make sure this is working
     private void Hostile_Reaction_LengthenPathToExit() {
         MazeDirection? longcutDir = maze.LengthenPathToExitIfPossible(playerCurrentCoords);
         bool longcutPossible = longcutDir != null;
@@ -502,6 +516,7 @@ public class GameAI : MonoBehaviour {
     }
 
     private void Hostile_Reaction_TheBeastIsNear() {
+        Debug.LogError("about to close doors in cell beastisnear");
         maze.CloseDoorsInCell(playerCurrentCoords, doItInstantly: true);
 
         SendMessageToPlayer(GameLinesTextGetter.BeastIsNearText, oneWayCommChannel);
@@ -585,6 +600,7 @@ public class GameAI : MonoBehaviour {
 
     //start off the end of the game. ending changes depending on ai state.
     private void FlyoverMonologueEnding() {
+        Debug.LogError("about to close doors in cell monologueending");
         maze.CloseDoorsInCell(playerCurrentCoords);
         player.PermanentlyFreezePlayer();
         SendMessageToPlayer(GameLinesTextGetter.GetEndingMonologue(AIAlignmentState.Neutral), oneWayCommChannel);
@@ -655,4 +671,17 @@ public class GameAI : MonoBehaviour {
     }
 
     #endregion
+
+    //useful for restarting the game. destroy everything the AI could have active
+    public void HaltAllActivityAndSelfDestruct() {
+        if (currentCommChannel != null) {
+            currentCommChannel.EndCommuncation();
+        }
+
+        if (currentInterchange != null) {
+            currentInterchange = null;
+        }
+
+        Destroy(gameObject);
+    }
 }
